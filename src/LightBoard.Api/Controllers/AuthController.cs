@@ -51,4 +51,10 @@ public class AuthController : ApiControllerBase
         await _authService.DeleteSession();
         return NoContent();
     }
+
+    [HttpPost("test")]
+    public string Kek()
+    {
+        return "work for you!";
+    }
 }

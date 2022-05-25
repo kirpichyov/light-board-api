@@ -6,7 +6,7 @@ namespace LightBoard.DataAccess.Connection;
 
 public class PostgreSqlContext : DbContext
 {
-    public DbSet<User> Users { get; set; } // TODO: will it work with private?
+    public DbSet<User> Users { get; set; }
 
     public PostgreSqlContext(DbContextOptions<PostgreSqlContext> options)
         : base(options)

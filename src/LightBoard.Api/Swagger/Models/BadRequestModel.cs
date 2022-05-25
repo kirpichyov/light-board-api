@@ -1,12 +1,11 @@
-﻿namespace LightBoard.Api.Swagger.Models;
+﻿using LightBoard.Api.Middleware.Exceptions;
 
-public class BadRequestModel
+namespace LightBoard.Api.Swagger.Models;
+
+internal class BadRequestModel : FluentValidationResponse
 {
-    public ErrorNode[] Errors { get; set; }
-    
-    public class ErrorNode
+    public BadRequestModel() 
+        : base(Array.Empty<ErrorNode>())
     {
-        public string Property { get; set; }
-        public string Error { get; set; }
     }
 }

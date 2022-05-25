@@ -1,5 +1,8 @@
 using FluentValidation.AspNetCore;
 using LightBoard.Api.Extensions;
+using LightBoard.Api.Middleware;
+using LightBoard.Api.Middleware.Exceptions;
+using LightBoard.Api.Middleware.Filters;
 using LightBoard.Api.Middleware.SessionKey;
 using LightBoard.Api.Swagger;
 using LightBoard.Api.Validators;
@@ -66,7 +69,13 @@ void ConfigureServices(IServiceCollection services)
             .AddFluentValidation(configuration =>
             {
                 configuration.RegisterValidatorsFromAssemblyContaining<RegisterRequestValidator>();
-            });
+            })
+            .AddMvcOptions(options =>
+            {
+                options.Filters.Add<ExceptionFilter>();
+                options.Filters.Add<FluentValidationFilter>();
+            })
+            .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);;
 
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGenNewtonsoftSupport()

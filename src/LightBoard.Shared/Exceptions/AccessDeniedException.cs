@@ -1,8 +1,8 @@
 ﻿namespace LightBoard.Shared.Exceptions;
 
-public class NotFoundException : ExceptionBase
+public class AccessDeniedException : ExceptionBase
 {
-    public NotFoundException(string message) 
+    public AccessDeniedException(string message)
         : base(message, ExceptionIdentifiers.AppValidation)
     {
     }
