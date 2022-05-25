@@ -8,7 +8,6 @@ using LightBoard.Shared.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 
 namespace LightBoard.Api.Middleware.SessionKey;
 
@@ -37,19 +36,12 @@ public class SessionAuthHandler : AuthenticationHandler<SessionAuthSchemeOptions
             return AuthenticateResult.NoResult();
         }
 
-        if (!Request.Headers.ContainsKey(HeaderNames.Authorization))
+        if (!Request.Headers.ContainsKey(ApiHeaders.SessionKey))
         {
             return AuthenticateResult.Fail("Authorization header not found.");
         }
 
-        string authHeader = Request.Headers[HeaderNames.Authorization].ToString();
-        string[] authHeaderSplit = authHeader.Split();
-        string sessionKey = authHeaderSplit.LastOrDefault();
-
-        if (authHeaderSplit.First() != ApiSchemas.SessionKeyScheme)
-        {
-            return AuthenticateResult.NoResult();
-        }
+        string sessionKey = Request.Headers[ApiHeaders.SessionKey].ToString();
 
         if (string.IsNullOrEmpty(sessionKey) || sessionKey.Length != _authOptions.SessionKeyLength)
         {

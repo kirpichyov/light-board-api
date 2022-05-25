@@ -1,13 +1,12 @@
 using FluentValidation.AspNetCore;
 using LightBoard.Api.Extensions;
-using LightBoard.Api.Middleware;
 using LightBoard.Api.Middleware.Exceptions;
 using LightBoard.Api.Middleware.Filters;
 using LightBoard.Api.Middleware.SessionKey;
 using LightBoard.Api.Swagger;
 using LightBoard.Api.Validators;
 using LightBoard.Application.Abstractions.Options;
-using Microsoft.Net.Http.Headers;
+using LightBoard.Shared.Api;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -89,7 +88,7 @@ void ConfigureServices(IServiceCollection services)
                             
                 options.AddSecurityDefinition("SessionKey", new OpenApiSecurityScheme
                 {
-                    Name = HeaderNames.Authorization,
+                    Name = ApiHeaders.SessionKey,
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Basic",
                     In = ParameterLocation.Header,
