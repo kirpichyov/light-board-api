@@ -4,8 +4,8 @@ namespace LightBoard.Api.Middleware.Exceptions;
 
 internal class GenericExceptionResponse : ExceptionResponse<string>
 {
-    public GenericExceptionResponse(Exception exception)
-        : base(ExceptionIdentifiers.Generic, exception.Message)
+    public GenericExceptionResponse()
+        : base(ExceptionIdentifiers.Generic, "Unexpected error occured")
     {
     }
 }

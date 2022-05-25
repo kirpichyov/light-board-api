@@ -65,7 +65,7 @@ public class ExceptionFilter : ExceptionFilterAttribute
         {
             responseModel = _exposeExceptionDetails
                 ? new GenericExceptionDetailedResponse(exception)
-                : new GenericExceptionResponse(exception);
+                : new GenericExceptionResponse();
         }
 
         context.Result = new JsonResult(responseModel)
