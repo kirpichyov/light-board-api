@@ -1,7 +1,6 @@
 # Light Board API
 LightBoard API is a backend for Trello analogue application developed with ASP.NET Core 6.
 [Project documentation.](https://github.com/kirpichyov/light-board-api/wiki)
-[Figma](https://www.figma.com/file/pBkCAmVgUR5Gh34071pUHI/LightBoard?node-id=0%3A1)
 
 ## Local environment with Docker
 
