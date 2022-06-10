@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C47BA4CE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightBoard.UnitTests", "tests\LightBoard.UnitTests\LightBoard.UnitTests.csproj", "{BF750AE6-4B6B-411B-8D23-121D5928E60E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightBoard.Tests.Common", "tests\LightBoard.Tests.Common\LightBoard.Tests.Common.csproj", "{0C679902-4993-4F85-9E36-AF7EFEDE481D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,8 +70,13 @@ Global
 		{BF750AE6-4B6B-411B-8D23-121D5928E60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF750AE6-4B6B-411B-8D23-121D5928E60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF750AE6-4B6B-411B-8D23-121D5928E60E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C679902-4993-4F85-9E36-AF7EFEDE481D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C679902-4993-4F85-9E36-AF7EFEDE481D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C679902-4993-4F85-9E36-AF7EFEDE481D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C679902-4993-4F85-9E36-AF7EFEDE481D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BF750AE6-4B6B-411B-8D23-121D5928E60E} = {C47BA4CE-55AA-423D-BCA9-68F91988AEE7}
+		{0C679902-4993-4F85-9E36-AF7EFEDE481D} = {C47BA4CE-55AA-423D-BCA9-68F91988AEE7}
 	EndGlobalSection
 EndGlobal
