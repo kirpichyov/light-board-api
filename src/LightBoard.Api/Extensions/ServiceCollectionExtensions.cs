@@ -52,12 +52,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IHashingProvider, HashingProvider>();
         services.AddScoped<IKeysGenerator, KeysGenerator>();
         services.AddScoped<IApplicationMapper, ApplicationMapper>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<IBlobService, BlobService>();
         
         return services;
     }
@@ -65,6 +66,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddCustomSettings<AuthOptions>(configuration);
+        services.AddCustomSettings<BlobOptions>(configuration);
         
         return services;
     }

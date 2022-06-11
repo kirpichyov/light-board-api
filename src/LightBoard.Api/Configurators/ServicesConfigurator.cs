@@ -23,7 +23,7 @@ public static class ServicesConfigurator
     
         services.AddPostgreSqlContext(appConfiguration, environment)
                 .AddRedisContext(appConfiguration)
-                .AddApplicationServices()
+                .AddApplicationServices(appConfiguration)
                 .AddApplicationOptions(appConfiguration)
                 .AddSessionKeyAuthorization();
 
