@@ -42,7 +42,6 @@ public class AuthController : ApiControllerBase
     }
     
     [HttpPost("logout")]
-    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
