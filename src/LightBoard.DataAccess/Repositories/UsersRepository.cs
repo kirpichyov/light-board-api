@@ -1,4 +1,5 @@
-﻿using LightBoard.DataAccess.Abstractions.Repositories;
+﻿using System.ComponentModel.DataAnnotations;
+using LightBoard.DataAccess.Abstractions.Repositories;
 using LightBoard.DataAccess.Connection;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Shared.Exceptions;
@@ -26,6 +27,6 @@ public class UsersRepository : RepositoryBase<User, Guid>, IUsersRepository
     public async Task<User> GetById(Guid id)
     {
         return await Context.Users.SingleOrDefaultAsync(user => user.Id == id)
-            ?? throw new NotFoundException("User is not found");
+            ?? throw new NotFoundException($"User with id: {id} has not found.");
     }
 }

@@ -22,6 +22,33 @@ namespace LightBoard.DataAccess.Migrations.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("LightBoard.Domain.Entities.Auth.ResetPasswordCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expiration_date");
+
+                    b.Property<string>("ResetCode")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("reset_code");
+
+                    b.HasKey("Id")
+                        .HasName("pk_reset_code_emails");
+
+                    b.ToTable("reset_code_emails", (string)null);
+                });
+
             modelBuilder.Entity("LightBoard.Domain.Entities.Auth.User", b =>
                 {
                     b.Property<Guid>("Id")

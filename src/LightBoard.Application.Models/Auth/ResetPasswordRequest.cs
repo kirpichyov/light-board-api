@@ -2,9 +2,8 @@
 
 namespace LightBoard.Application.Models.Auth;
 
-public class RegisterRequest : IContainsPassword
+public class ResetPasswordRequest : IContainsPassword
 {
-    public string Email { get; set; }
-    public string Name { get; set; }
     public string Password { get; set; }
+    public string ResetCode { get; set; }
 }
