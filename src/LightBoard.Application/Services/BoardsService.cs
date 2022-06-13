@@ -3,6 +3,7 @@ using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Boards;
+using LightBoard.Shared.Exceptions;
 
 namespace LightBoard.Application.Services;
 
@@ -11,7 +12,7 @@ public class BoardsService : IBoardsService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserInfoService _userInfo;
     private readonly IApplicationMapper _mapper;
-
+    
     public BoardsService(
         IUnitOfWork unitOfWork, 
         IUserInfoService userInfo, 
@@ -70,5 +71,53 @@ public class BoardsService : IBoardsService
         Board board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
 
         return _mapper.ToBoardResponse(board);
+    }
+
+    public async Task<BoardMemberResponse> InviteMemberToBoard(Guid id, InviteMemberToBoardRequest request)
+    {
+        var user = await _unitOfWork.Users.Get(request.Email);
+
+        if (user is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+
+        if (board.BoardMembers.Any(member => member.UserId == user.Id))
+        {
+            throw new ValidationFailedException("User already has access to board");
+        }
+
+        BoardMember member = new BoardMember(user.Id, board.Id);
+        
+        _unitOfWork.BoardMembers.Add(member);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return _mapper.ToBoardMemberResponse(user);
+    }
+
+    public async Task DeleteBoardMember(Guid id, Guid userId)
+    {
+        var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+
+        var boardMember = board.BoardMembers.SingleOrDefault(member => member.UserId == userId);
+
+        if (boardMember is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+        
+        _unitOfWork.BoardMembers.Delete(boardMember);
+
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers(Guid id)
+    {
+        var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+
+        return _mapper.MapCollection(board.BoardMembers.Select(member => member.User), _mapper.ToBoardMemberResponse);
     }
 }

@@ -66,4 +66,37 @@ public class BoardsController : ApiControllerBase
         
         return board;
     }
+
+    [HttpPost("{boardId:guid}/invite-member")]
+    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<BoardMemberResponse> InviteMemberToBoard([FromRoute] Guid boardId, [FromBody] InviteMemberToBoardRequest request)
+    {
+        var member = await _boardsService.InviteMemberToBoard(boardId, request);
+
+        return member;
+    }
+    
+    [HttpDelete("{boardId:guid}/members/{userId:guid}")]
+    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteBoardMember([FromRoute] Guid boardId, [FromRoute] Guid userId)
+    {
+        await _boardsService.DeleteBoardMember(boardId, userId);
+        
+        return NoContent();
+    }
+
+    [HttpGet("{boardId:guid}/members")]
+    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers([FromRoute] Guid boardId)
+    {
+        var members = await _boardsService.GetAllBoardMembers(boardId);
+
+        return members;
+    }
 }

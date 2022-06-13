@@ -15,8 +15,9 @@ public class BoardsRepository : RepositoryBase<Board, Guid>, IBoardsRepository
 
     public async Task<Board> GetForUser(Guid boardId, Guid userId)
     {
-        return await Context.Boards.SingleOrDefaultAsync(board => board.Id == boardId && board.BoardMembers
-            .Any(member => member.UserId == userId)) 
+        return await Context.Boards.Include(board => board.BoardMembers)
+                   .SingleOrDefaultAsync(board => board.Id == boardId && board.BoardMembers
+                       .Any(member => member.UserId == userId))
                ?? throw new NotFoundException("Board not found");
     }
 
