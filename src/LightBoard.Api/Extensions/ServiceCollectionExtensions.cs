@@ -59,7 +59,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IApplicationMapper, ApplicationMapper>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddSingleton<IBlobService, BlobService>();
-        
+        services.AddScoped<IBoardsService, BoardsService>();
+
         return services;
     }
 

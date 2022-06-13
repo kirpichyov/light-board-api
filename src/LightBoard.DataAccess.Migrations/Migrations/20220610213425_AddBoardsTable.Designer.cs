@@ -3,6 +3,7 @@ using System;
 using LightBoard.DataAccess.Connection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightBoard.DataAccess.Migrations.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    partial class PostgreSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220610213425_AddBoardsTable")]
+    partial class AddBoardsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,54 +72,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasName("pk_boards");
 
                     b.ToTable("boards", (string)null);
-                });
-
-            modelBuilder.Entity("LightBoard.Domain.Entities.Boards.BoardMember", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("BoardId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("board_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_board_members");
-
-                    b.HasIndex("BoardId")
-                        .HasDatabaseName("ix_board_members_board_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_board_members_user_id");
-
-                    b.ToTable("board_members", (string)null);
-                });
-
-            modelBuilder.Entity("LightBoard.Domain.Entities.Boards.BoardMember", b =>
-                {
-                    b.HasOne("LightBoard.Domain.Entities.Boards.Board", "Board")
-                        .WithMany()
-                        .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_board_members_boards_board_id");
-
-                    b.HasOne("LightBoard.Domain.Entities.Auth.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_board_members_users_user_temp_id");
-
-                    b.Navigation("Board");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
