@@ -38,13 +38,14 @@ public class ApplicationMapper : IApplicationMapper
         };    
     }
 
-    public BoardMemberResponse ToBoardMemberResponse(User user)
+    public BoardMemberResponse ToBoardMemberResponse(BoardMember boardMember)
     {
         return new BoardMemberResponse()
         {
-            Id = user.Id,
-            Email = user.Email,
-            Username = user.Name
+            Id = boardMember.Id,
+            Email = boardMember.User.Email,
+            Username = boardMember.User.Name,
+            UserAvatar = boardMember.User.AvatarUrl
         };
     }
 

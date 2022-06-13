@@ -68,35 +68,33 @@ public class BoardsController : ApiControllerBase
     }
 
     [HttpPost("{boardId:guid}/invite-member")]
-    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BoardMemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
     public async Task<BoardMemberResponse> InviteMemberToBoard([FromRoute] Guid boardId, [FromBody] InviteMemberToBoardRequest request)
     {
-        var member = await _boardsService.InviteMemberToBoard(boardId, request);
+        var boardMember = await _boardsService.InviteMemberToBoard(boardId, request);
 
-        return member;
+        return boardMember;
     }
     
-    [HttpDelete("{boardId:guid}/members/{userId:guid}")]
-    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [HttpDelete("members/{boardMemberId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> DeleteBoardMember([FromRoute] Guid boardId, [FromRoute] Guid userId)
+    public async Task<IActionResult> DeleteBoardMember([FromRoute] Guid boardMemberId)
     {
-        await _boardsService.DeleteBoardMember(boardId, userId);
+        await _boardsService.DeleteBoardMember(boardMemberId);
         
         return NoContent();
     }
 
     [HttpGet("{boardId:guid}/members")]
-    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BoardMemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
     public async Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers([FromRoute] Guid boardId)
     {
-        var members = await _boardsService.GetAllBoardMembers(boardId);
+        var boardMembers = await _boardsService.GetAllBoardMembers(boardId);
 
-        return members;
+        return boardMembers;
     }
 }

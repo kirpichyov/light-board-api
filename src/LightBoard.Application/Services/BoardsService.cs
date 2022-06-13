@@ -95,18 +95,21 @@ public class BoardsService : IBoardsService
 
         await _unitOfWork.SaveChangesAsync();
 
-        return _mapper.ToBoardMemberResponse(user);
+        return _mapper.ToBoardMemberResponse(member);
     }
 
-    public async Task DeleteBoardMember(Guid id, Guid userId)
+    public async Task DeleteBoardMember(Guid boardMemberId)
     {
-        var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+        var boardMember = await _unitOfWork.BoardMembers.GetById(boardMemberId);
 
-        var boardMember = board.BoardMembers.SingleOrDefault(member => member.UserId == userId);
-
-        if (boardMember is null)
+        if (boardMember.UserId == _userInfo.UserId)
         {
-            throw new NotFoundException("User not found");
+            throw new AccessDeniedException();
+        }
+        
+        if (!await _unitOfWork.Boards.HasAccessToBoard(boardMember.BoardId, _userInfo.UserId))
+        {
+            throw new AccessDeniedException();
         }
         
         _unitOfWork.BoardMembers.Delete(boardMember);
@@ -117,7 +120,7 @@ public class BoardsService : IBoardsService
     public async Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers(Guid id)
     {
         var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
-
-        return _mapper.MapCollection(board.BoardMembers.Select(member => member.User), _mapper.ToBoardMemberResponse);
+        
+        return _mapper.MapCollection(board.BoardMembers, _mapper.ToBoardMemberResponse);
     }
 }
