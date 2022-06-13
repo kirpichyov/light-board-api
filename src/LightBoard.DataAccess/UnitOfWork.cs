@@ -9,6 +9,8 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly PostgreSqlContext _context;
     private IUsersRepository? _users;
+    private IBoardsRepository? _boards;
+    private IBoardMembersRepository? _boardMembers;
 
     public UnitOfWork(PostgreSqlContext context)
     {
@@ -16,7 +18,10 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public IUsersRepository Users => _users ??= new UsersRepository(_context);
-    
+    public IBoardsRepository Boards => _boards ??= new BoardsRepository(_context);
+    public IBoardMembersRepository BoardMembers => _boardMembers ??= new BoardMembersRepository(_context);
+
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

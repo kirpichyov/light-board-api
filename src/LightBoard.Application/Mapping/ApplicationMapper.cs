@@ -1,8 +1,10 @@
 ﻿using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
+using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Users;
 using LightBoard.Domain.Entities.Auth;
+using LightBoard.Domain.Entities.Boards;
 
 namespace LightBoard.Application.Mapping;
 
@@ -27,7 +29,16 @@ public class ApplicationMapper : IApplicationMapper
         };
     }
     
-    public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(ICollection<TSource> sources, Func<TSource, TDestination> rule)
+    public BoardResponse ToBoardResponse(Board board)
+    {
+        return new BoardResponse()
+        {
+            Id = board.Id,
+            Name = board.Name
+        };    
+    }
+    
+    public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule)
     {
         return sources.Select(rule).ToArray();
     }
