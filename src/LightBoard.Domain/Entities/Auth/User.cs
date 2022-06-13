@@ -17,4 +17,6 @@ public class User : EntityBase<Guid>
     public string Email { get; }
     public string Name { get; }
     public string PasswordHash { get; }
+    public string AvatarUrl { get; set; }
+    public string AvatarBlobName { get; set; }
 }
