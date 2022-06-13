@@ -42,4 +42,14 @@ public class ApplicationMapper : IApplicationMapper
     {
         return sources.Select(rule).ToArray();
     }
+
+    public UserProfileResponse ToUserProfileResponse(User user)
+    {
+        return new UserProfileResponse() 
+        {
+            Email = user.Email,
+            Name = user.Name,
+            UserAvatar = user.AvatarUrl
+        };
+    }
 }

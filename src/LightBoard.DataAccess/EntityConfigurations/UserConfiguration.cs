@@ -12,5 +12,7 @@ public class UserConfiguration : EntityConfigurationBase<User, Guid>
         builder.Property(user => user.Email).IsRequired();
         builder.Property(user => user.Name).IsRequired();
         builder.Property(user => user.PasswordHash).IsRequired();
+        builder.Property(user => user.AvatarUrl).IsRequired(false);
+        builder.Property(user => user.AvatarBlobName).IsRequired(false);
     }
 }

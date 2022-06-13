@@ -29,6 +29,14 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("AvatarBlobName")
+                        .HasColumnType("text")
+                        .HasColumnName("avatar_blob_name");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("avatar_url");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text")
