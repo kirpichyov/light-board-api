@@ -60,7 +60,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddSingleton<IBlobService, BlobService>();
         services.AddScoped<IBoardsService, BoardsService>();
-
+        services.AddScoped<IProfileService, ProfileService>();
         return services;
     }
 

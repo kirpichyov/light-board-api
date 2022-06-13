@@ -14,4 +14,5 @@ public interface IApplicationMapper
     BoardResponse ToBoardResponse(Board board);
     BoardMemberResponse ToBoardMemberResponse(User user);
     IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule);
+    UserProfileResponse ToUserProfileResponse(User user);
 }
