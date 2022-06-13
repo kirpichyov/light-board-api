@@ -1,12 +1,10 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
-using GuardNet;
 using LightBoard.Application.Abstractions.Arguments;
 using LightBoard.Application.Abstractions.Options;
 using LightBoard.Application.Abstractions.Results;
 using LightBoard.Application.Abstractions.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Unidecode.NET;
 
@@ -23,29 +21,33 @@ public class BlobService : IBlobService
         _blobOptions = blobOptions.Value;
         _blobServiceClient = new BlobServiceClient(_blobOptions.ConnectionString);
     }
-    
-    public async Task<UploadBlobResult> UploadBlob(UploadBlobArgs args)
+
+    public async Task<UploadBlobResult> UploadFormFile(UploadFormFileArgs arguments)
     {
-        VerifyArgs(args);
-
-        string containerName = MapToContainerName(args.BlobContainer);
-        var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        
-        var blobName = Guid.NewGuid().ToString();
-        var blob = containerClient.GetBlobClient(blobName);
-
-        var blobHttpHeader = new BlobHttpHeaders
+        var args = new UploadBlobArgs()
         {
-            ContentType = args.FormFile.ContentType,
-            ContentDisposition = GetNormalizedContentDisposition(args.FormFile, args.BlobPurpose),
+            BlobContainer = arguments.Container,
+            ContentDisposition = GetNormalizedContentDisposition(arguments.FormFile.FileName, arguments.Purpose),
+            ContentType = arguments.FormFile.ContentType,
+            ContentStream = arguments.FormFile.OpenReadStream()
         };
 
-        await blob.UploadAsync(args.FormFile.OpenReadStream(), blobHttpHeader);
-        var uri = blob.GenerateSasUri(BlobSasPermissions.Read, DefaultSasExpiresOn).ToString();
-
-        return new UploadBlobResult(uri, blobName);
+        return await UploadBlob(args);
     }
-    
+
+    public async Task<UploadBlobResult> UploadStreamContent(UploadFileStreamArgs arguments)
+    {
+        var args = new UploadBlobArgs()
+        {
+            BlobContainer = arguments.Container,
+            ContentDisposition = GetNormalizedContentDisposition(arguments.FileName, arguments.Purpose),
+            ContentType = arguments.ContentType,
+            ContentStream = arguments.ContentStream
+        };
+
+        return await UploadBlob(args);
+    }
+
     public async Task DeleteFile(BlobContainer container, string blobName)
     {
         var containerName = MapToContainerName(container);
@@ -64,7 +66,7 @@ public class BlobService : IBlobService
         };
     }
 
-    private string GetNormalizedContentDisposition(IFormFile file, BlobPurpose blobPurpose)
+    private string GetNormalizedContentDisposition(string fileName, BlobPurpose blobPurpose)
     {
         string type = blobPurpose switch
         {
@@ -73,12 +75,34 @@ public class BlobService : IBlobService
             _ => throw new ArgumentException($"Value '{blobPurpose}' is unexpected.", nameof(blobPurpose))
         };
         
-        return $"{type}; filename=\"{file.FileName.Unidecode()}\";";
+        return $"{type}; filename=\"{fileName.Unidecode()}\";";
     }
 
-    private void VerifyArgs(UploadBlobArgs args)
+    private async Task<UploadBlobResult> UploadBlob(UploadBlobArgs args)
     {
-        Guard.NotNull(args.FormFile, nameof(args.FormFile));
-        Guard.NotLessThan(args.FormFile.Length, 1, nameof(args.FormFile.Length), "File is empty.");
+        string containerName = MapToContainerName(args.BlobContainer);
+        var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        
+        var blobName = Guid.NewGuid().ToString();
+        var blob = containerClient.GetBlobClient(blobName);
+
+        var blobHttpHeader = new BlobHttpHeaders
+        {
+            ContentType = args.ContentType,
+            ContentDisposition = args.ContentDisposition
+        };
+
+        await blob.UploadAsync(args.ContentStream, blobHttpHeader);
+        var uri = blob.GenerateSasUri(BlobSasPermissions.Read, DefaultSasExpiresOn).ToString();
+
+        return new UploadBlobResult(uri, blobName);
+    }
+    
+    private class UploadBlobArgs
+    {
+        public BlobContainer BlobContainer { get; init; }
+        public string ContentType { get; init; }
+        public string ContentDisposition { get; init; }
+        public Stream ContentStream { get; init; }
     }
 }
