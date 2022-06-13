@@ -23,13 +23,13 @@ namespace LightBoard.Application.Services
 
         public async Task<UpdateAvatarResponse> UpdateAvatar(UpdateAvatarRequest request)
         {
-            var args = new UploadBlobArgs()
+            var args = new UploadFormFileArgs()
             {
-                 BlobContainer = BlobContainer.UserAvatars,
-                 BlobPurpose = BlobPurpose.Inline,
+                 Container = BlobContainer.UserAvatars,
+                 Purpose = BlobPurpose.Inline,
                  FormFile = request.File
             };
-            var result = await _blobService.UploadBlob(args);
+            var result = await _blobService.UploadFormFile(args);
             
             var userId = _userInfoService.UserId;
             var user = await _unitOfWork.Users.GetById(userId);
@@ -54,6 +54,5 @@ namespace LightBoard.Application.Services
              
             return _mapper.ToUserProfileResponse(user);
         }
-
     }
 }
