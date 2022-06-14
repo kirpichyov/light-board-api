@@ -65,6 +65,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBoardsService, BoardsService>();
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IColumnsService, ColumnsService>();
+        services.AddScoped<ICardsService, CardsService>();
         
         return services;
     }

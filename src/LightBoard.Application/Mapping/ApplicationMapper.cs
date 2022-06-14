@@ -2,10 +2,12 @@
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Users;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
+using LightBoard.Domain.Entities.Cards;
 using LightBoard.Domain.Entities.Columns;
 
 namespace LightBoard.Application.Mapping;
@@ -71,7 +73,18 @@ public class ApplicationMapper : IApplicationMapper
             Order = column.Order
         };
     }
-    
+
+    public CardResponse ToCardResponse(Card card)
+    {
+        return new CardResponse()
+        {
+            Id = card.Id,
+            Title = card.Title,
+            Description = card.Description,
+            Order = card.Order
+        };
+    }
+
     public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule)
     {
         return sources.Select(rule).ToArray();

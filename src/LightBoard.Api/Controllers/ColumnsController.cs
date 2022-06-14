@@ -1,5 +1,6 @@
 ﻿using LightBoard.Api.Swagger.Models;
 using LightBoard.Application.Abstractions.Services;
+using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,5 +55,28 @@ public class ColumnsController : ApiControllerBase
         var column = await _columnsService.UpdateOrder(columnId, request);
 
         return column;
+    }
+
+    [HttpPost("{columnId:guid}/cards")]
+    [ProducesResponseType(typeof(ColumnResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<CardResponse> CreateCard([FromRoute] Guid columnId, [FromBody] CreateCardRequest request)
+    {
+        var card = await _columnsService.CreateCard(columnId, request);
+
+        Response.StatusCode = StatusCodes.Status201Created;
+
+        return card;
+    }
+
+    [HttpGet("{columnId:guid}/cards")]
+    [ProducesResponseType(typeof(ColumnResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    public async Task<IReadOnlyCollection<CardResponse>> GetColumnCards([FromRoute] Guid columnId)
+    {
+        var cards = await _columnsService.GetColumnCards(columnId);
+
+        return cards;
     }
 }
