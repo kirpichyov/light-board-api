@@ -32,7 +32,7 @@ docker run --name redis_local -d -p 6379:6379 redis
 
 1. To apply migrations to database use `dotnet ef database update --project "path_to_migrations_project"`
 2. To generate a migration use `dotnet ef migrations add "YourMigrationName" --project "path_to_migrations_project"`
-3. To remove the last migration use `dotnet ef migrations remove "YourMigrationName" --project "path_to_migrations_project"`
+3. To remove the last migration use `dotnet ef migrations remove --project "path_to_migrations_project"`
 
 
 Examples:
