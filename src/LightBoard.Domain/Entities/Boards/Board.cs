@@ -1,4 +1,6 @@
-﻿namespace LightBoard.Domain.Entities.Boards;
+﻿using LightBoard.Domain.Entities.Columns;
+
+namespace LightBoard.Domain.Entities.Boards;
 
 public class Board : EntityBase<Guid>
 {
@@ -16,4 +18,5 @@ public class Board : EntityBase<Guid>
     public string Name { get; set; }
     public bool IsArchived { get; set; }
     public ICollection<BoardMember> BoardMembers { get; }
+    public ICollection<Column> Columns { get; }
 }

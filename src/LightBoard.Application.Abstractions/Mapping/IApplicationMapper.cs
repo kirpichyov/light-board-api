@@ -1,9 +1,11 @@
 ﻿using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Users;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
+using LightBoard.Domain.Entities.Columns;
 
 namespace LightBoard.Application.Abstractions.Mapping;
 
@@ -15,4 +17,5 @@ public interface IApplicationMapper
     BoardMemberResponse ToBoardMemberResponse(BoardMember boardMember);
     IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule);
     UserProfileResponse ToUserProfileResponse(User user);
+    ColumnResponse ToColumnResponse(Column column);
 }

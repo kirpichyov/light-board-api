@@ -1,8 +1,10 @@
 ﻿using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Columns;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Boards;
+using LightBoard.Domain.Entities.Columns;
 using LightBoard.Shared.Exceptions;
 
 namespace LightBoard.Application.Services;
@@ -122,5 +124,25 @@ public class BoardsService : IBoardsService
         var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
         
         return _mapper.MapCollection(board.BoardMembers, _mapper.ToBoardMemberResponse);
+    }
+
+    public async Task<ColumnResponse> CreateColumn(Guid id, CreateColumnRequest request)
+    {
+        var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+        
+        var column = new Column(request.Name, id, board.Columns.Count + 1);
+        
+        _unitOfWork.Columns.Add(column);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return _mapper.ToColumnResponse(column);
+    }
+
+    public async Task<IReadOnlyCollection<ColumnResponse>> GetColumns(Guid id)
+    {
+        var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+
+        return _mapper.MapCollection(board.Columns, _mapper.ToColumnResponse);
     }
 }
