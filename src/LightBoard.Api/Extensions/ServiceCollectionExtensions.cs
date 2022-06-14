@@ -61,6 +61,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBlobService, BlobService>();
         services.AddScoped<IBoardsService, BoardsService>();
         services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IColumnsService, ColumnsService>();
+        
         return services;
     }
 

@@ -1,6 +1,7 @@
 ﻿using LightBoard.Api.Swagger.Models;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Columns;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LightBoard.Api.Controllers;
@@ -96,5 +97,28 @@ public class BoardsController : ApiControllerBase
         var boardMembers = await _boardsService.GetAllBoardMembers(boardId);
 
         return boardMembers;
+    }
+
+    [HttpPost("{boardId:guid}/columns")]
+    [ProducesResponseType(typeof(ColumnResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<ColumnResponse> CreateColumn([FromRoute] Guid boardId, [FromBody] CreateColumnRequest request)
+    {
+        var column = await _boardsService.CreateColumn(boardId, request);
+        
+        Response.StatusCode = StatusCodes.Status201Created;
+
+        return column;
+    }
+
+    [HttpGet("{boardId:guid}/columns")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<ColumnResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    public async Task<IReadOnlyCollection<ColumnResponse>> GetColumns([FromRoute] Guid boardId)
+    {
+        var columns = await _boardsService.GetColumns(boardId);
+
+        return columns;
     }
 }

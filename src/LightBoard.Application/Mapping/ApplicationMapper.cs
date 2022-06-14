@@ -2,9 +2,11 @@
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Users;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
+using LightBoard.Domain.Entities.Columns;
 
 namespace LightBoard.Application.Mapping;
 
@@ -34,7 +36,8 @@ public class ApplicationMapper : IApplicationMapper
         return new BoardResponse()
         {
             Id = board.Id,
-            Name = board.Name
+            Name = board.Name,
+            Columns = board.Columns.Select(ToColumnResponse).ToArray()
         };    
     }
 
@@ -49,11 +52,6 @@ public class ApplicationMapper : IApplicationMapper
         };
     }
 
-    public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule)
-    {
-        return sources.Select(rule).ToArray();
-    }
-
     public UserProfileResponse ToUserProfileResponse(User user)
     {
         return new UserProfileResponse() 
@@ -62,5 +60,20 @@ public class ApplicationMapper : IApplicationMapper
             Name = user.Name,
             UserAvatar = user.AvatarUrl
         };
+    }
+
+    public ColumnResponse ToColumnResponse(Column column)
+    {
+        return new ColumnResponse()
+        {
+            Id = column.Id,
+            Name = column.Name,
+            Order = column.Order
+        };
+    }
+    
+    public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule)
+    {
+        return sources.Select(rule).ToArray();
     }
 }
