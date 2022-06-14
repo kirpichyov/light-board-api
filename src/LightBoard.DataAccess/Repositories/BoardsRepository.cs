@@ -15,8 +15,10 @@ public class BoardsRepository : RepositoryBase<Board, Guid>, IBoardsRepository
 
     public async Task<Board> GetForUser(Guid boardId, Guid userId)
     {
-        return await Context.Boards.SingleOrDefaultAsync(board => board.Id == boardId && board.BoardMembers
-            .Any(member => member.UserId == userId)) 
+        return await Context.Boards.Include(board => board.BoardMembers)
+                   .ThenInclude(member => member.User)
+                   .SingleOrDefaultAsync(board => board.Id == boardId && board.BoardMembers
+                       .Any(member => member.UserId == userId))
                ?? throw new NotFoundException("Board not found");
     }
 
@@ -25,5 +27,11 @@ public class BoardsRepository : RepositoryBase<Board, Guid>, IBoardsRepository
         return await Context.Boards.Where(board => board.BoardMembers
             .Any(boardMember => boardMember.UserId == userId))
             .ToArrayAsync();
+    }
+
+    public async Task<bool> HasAccessToBoard(Guid boardId, Guid userId)
+    {
+        return await Context.Boards.AnyAsync(board => board.Id == boardId && board.BoardMembers
+            .Any(member => member.UserId == userId));
     }
 }

@@ -9,4 +9,7 @@ public interface IBoardsService
     Task DeleteBoard(Guid id);
     Task<IReadOnlyCollection<BoardResponse>> GetAllBoards();
     Task<BoardResponse> GetBoard(Guid id);
+    Task<BoardMemberResponse> InviteMemberToBoard(Guid id, InviteMemberToBoardRequest request);
+    Task DeleteBoardMember(Guid boardMemberId);
+    Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers(Guid id);
 }

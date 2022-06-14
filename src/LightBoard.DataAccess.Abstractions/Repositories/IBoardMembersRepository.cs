@@ -4,4 +4,5 @@ namespace LightBoard.DataAccess.Abstractions.Repositories;
 
 public interface IBoardMembersRepository : IRepositoryBase<BoardMember, Guid>
 {
+    Task<BoardMember> GetById(Guid id);
 }

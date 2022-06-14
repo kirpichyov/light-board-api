@@ -12,6 +12,7 @@ public interface IApplicationMapper
     User ToUser(RegisterRequest request, IHashingProvider hashingProvider);
     UserInfoResponse ToUserInfoResponse(User user);
     BoardResponse ToBoardResponse(Board board);
+    BoardMemberResponse ToBoardMemberResponse(BoardMember boardMember);
     IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule);
     UserProfileResponse ToUserProfileResponse(User user);
 }

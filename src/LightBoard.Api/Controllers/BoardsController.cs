@@ -66,4 +66,35 @@ public class BoardsController : ApiControllerBase
         
         return board;
     }
+
+    [HttpPost("{boardId:guid}/invite-member")]
+    [ProducesResponseType(typeof(BoardMemberResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<BoardMemberResponse> InviteMemberToBoard([FromRoute] Guid boardId, [FromBody] InviteMemberToBoardRequest request)
+    {
+        var boardMember = await _boardsService.InviteMemberToBoard(boardId, request);
+
+        return boardMember;
+    }
+    
+    [HttpDelete("members/{boardMemberId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteBoardMember([FromRoute] Guid boardMemberId)
+    {
+        await _boardsService.DeleteBoardMember(boardMemberId);
+        
+        return NoContent();
+    }
+
+    [HttpGet("{boardId:guid}/members")]
+    [ProducesResponseType(typeof(BoardMemberResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    public async Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers([FromRoute] Guid boardId)
+    {
+        var boardMembers = await _boardsService.GetAllBoardMembers(boardId);
+
+        return boardMembers;
+    }
 }

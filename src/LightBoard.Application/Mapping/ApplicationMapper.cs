@@ -37,7 +37,18 @@ public class ApplicationMapper : IApplicationMapper
             Name = board.Name
         };    
     }
-    
+
+    public BoardMemberResponse ToBoardMemberResponse(BoardMember boardMember)
+    {
+        return new BoardMemberResponse()
+        {
+            Id = boardMember.Id,
+            Email = boardMember.User.Email,
+            Username = boardMember.User.Name,
+            UserAvatar = boardMember.User.AvatarUrl
+        };
+    }
+
     public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule)
     {
         return sources.Select(rule).ToArray();
