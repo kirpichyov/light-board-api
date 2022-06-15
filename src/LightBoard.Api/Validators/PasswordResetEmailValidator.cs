@@ -1,23 +1,17 @@
 ﻿using System.Net.Mail;
 using System.Text.RegularExpressions;
 using FluentValidation;
-using LightBoard.Api.Validators.Internal;
 using LightBoard.Application.Models.Auth;
 
 namespace LightBoard.Api.Validators;
 
-public class RegisterRequestValidator : PasswordRequestValidator<RegisterRequest>
+public class PasswordResetEmailValidator : AbstractValidator<ResetPasswordEmailRequest>
 {
-    public RegisterRequestValidator()
+    public PasswordResetEmailValidator()
     {
         RuleFor(model => model.Email)
             .NotEmpty()
             .Must(email => MailAddress.TryCreate(email, out _))
             .WithMessage("{PropertyName} has invalid format");
-        
-        RuleFor(model => model.Name)
-            .NotEmpty()
-            .MinimumLength(1)
-            .MaximumLength(32);
     }
 }

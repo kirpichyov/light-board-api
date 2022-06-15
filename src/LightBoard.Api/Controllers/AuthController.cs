@@ -11,10 +11,12 @@ namespace LightBoard.Api.Controllers;
 public class AuthController : ApiControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IPasswordService _passwordService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IPasswordService passwordService)
     {
         _authService = authService;
+        _passwordService = passwordService;
     }
 
     [HttpPost("register")]
@@ -27,6 +29,32 @@ public class AuthController : ApiControllerBase
         
         Response.Headers.Add(ApiHeaders.SessionKey, creationResult.SessionKey);
         return new ObjectResult(creationResult.CreatedUserInfo);
+    }
+
+    [HttpPut("password")]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
+    {
+        await _passwordService.UpdatePassword(request);
+        return NoContent();
+    }
+    
+    [HttpPost("request-password-reset-email")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RequestPasswordReset([FromBody] ResetPasswordEmailRequest request)
+    {
+        await _passwordService.RequestPasswordReset(request);
+        return NoContent();
+    }
+    
+    [HttpPost("password-reset")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        await _passwordService.ResetPassword(request);
+        return NoContent();
     }
     
     [HttpPost("sign-in")]

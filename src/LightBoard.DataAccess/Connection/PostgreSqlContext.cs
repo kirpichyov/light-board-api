@@ -9,6 +9,7 @@ namespace LightBoard.DataAccess.Connection;
 public class PostgreSqlContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<ResetPasswordCode> ResetCodeEmails { get; set; }
     public DbSet<Board> Boards { get; set; }
     public DbSet<BoardMember> BoardMembers { get; set; }
     public DbSet<Column> Columns { get; set; }

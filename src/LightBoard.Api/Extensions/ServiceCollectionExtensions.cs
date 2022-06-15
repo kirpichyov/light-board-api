@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<IResetCodeEmailsRepository, ResetCodeEmailsRepository>();
 
         return services;
     }
@@ -58,6 +59,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IKeysGenerator, KeysGenerator>();
         services.AddScoped<IApplicationMapper, ApplicationMapper>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IPasswordService, PasswordService>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<IBlobService, BlobService>();
         services.AddScoped<IBoardsService, BoardsService>();
         services.AddScoped<IProfileService, ProfileService>();
@@ -70,6 +73,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddCustomSettings<AuthOptions>(configuration);
         services.AddCustomSettings<BlobOptions>(configuration);
+        services.AddCustomSettings<MailingOptions>(configuration);
         
         return services;
     }
