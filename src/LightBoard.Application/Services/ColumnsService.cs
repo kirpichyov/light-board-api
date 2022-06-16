@@ -1,7 +1,9 @@
 ﻿using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
+using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.DataAccess.Abstractions;
+using LightBoard.Domain.Entities.Cards;
 
 namespace LightBoard.Application.Services;
 
@@ -77,5 +79,25 @@ public class ColumnsService : IColumnsService
         await _unitOfWork.SaveChangesAsync();
 
         return _mapper.ToColumnResponse(column);
+    }
+
+    public async Task<CardResponse> CreateCard(Guid id, CreateCardRequest request)
+    {
+        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+
+        var card = new Card(column.Id, request.Title, request.Description, column.Cards.Count + 1);
+        
+        _unitOfWork.Cards.Add(card);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return _mapper.ToCardResponse(card);
+    }
+
+    public async Task<IReadOnlyCollection<CardResponse>> GetColumnCards(Guid id)
+    {
+        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+
+        return _mapper.MapCollection(column.Cards, _mapper.ToCardResponse);
     }
 }

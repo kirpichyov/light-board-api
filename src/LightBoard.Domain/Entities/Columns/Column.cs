@@ -1,4 +1,5 @@
 ﻿using LightBoard.Domain.Entities.Boards;
+using LightBoard.Domain.Entities.Cards;
 
 namespace LightBoard.Domain.Entities.Columns;
 
@@ -20,4 +21,5 @@ public class Column : EntityBase<Guid>
     public int Order { get; set; }
     public Guid BoardId { get; }
     public Board Board { get; }
+    public ICollection<Card> Cards { get; }
 }
