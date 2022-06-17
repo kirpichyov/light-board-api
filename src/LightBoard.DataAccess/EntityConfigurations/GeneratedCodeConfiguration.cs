@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LightBoard.DataAccess.EntityConfigurations;
 
-public class ResetPasswordCodeConfiguration : EntityConfigurationBase<ResetPasswordCode, Guid>
+public class GeneratedCodeConfiguration : EntityConfigurationBase<CodeBase, Guid>
 {
-    public override void Configure(EntityTypeBuilder<ResetPasswordCode> builder)
+    public override void Configure(EntityTypeBuilder<CodeBase> builder)
     {
         base.Configure(builder);
 

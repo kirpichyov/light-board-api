@@ -8,7 +8,7 @@ namespace LightBoard.DataAccess;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly PostgreSqlContext _context;
-    private IResetCodeEmailsRepository? _resetCodeEmails;
+    private IGeneratedCodesRepository? _generatedCodes;
     private IUsersRepository? _users;
     private IBoardsRepository? _boards;
     private IBoardMembersRepository? _boardMembers;
@@ -16,14 +16,13 @@ public class UnitOfWork : IUnitOfWork
     private ICardsRepository? _cards;
     private ICardAssigneeRepository? _cardAssignees;
 
-    public UnitOfWork(PostgreSqlContext context, IResetCodeEmailsRepository resetCodeEmails)
+    public UnitOfWork(PostgreSqlContext context)
     {
         _context = context;
-        _resetCodeEmails = resetCodeEmails;
     }
 
     public IUsersRepository Users => _users ??= new UsersRepository(_context);
-    public IResetCodeEmailsRepository ResetCodeEmails => _resetCodeEmails ??= new ResetCodeEmailsRepository(_context);
+    public IGeneratedCodesRepository GeneratedCodes => _generatedCodes ??= new GeneratedCodesRepository(_context);
     public IBoardsRepository Boards => _boards ??= new BoardsRepository(_context);
     public IBoardMembersRepository BoardMembers => _boardMembers ??= new BoardMembersRepository(_context);
     public IColumnsRepository Columns => _columns ??= new ColumnsRepository(_context);

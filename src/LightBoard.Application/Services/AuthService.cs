@@ -1,4 +1,5 @@
-﻿using LightBoard.Application.Abstractions.Mapping;
+﻿using LightBoard.Application.Abstractions.Arguments;
+using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Options;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
@@ -20,6 +21,7 @@ public class AuthService : IAuthService
     private readonly IApplicationMapper _mapper;
     private readonly IHashingProvider _hashingProvider;
     private readonly IKeysGenerator _keysGenerator;
+    private readonly IUserInfoService _userInfoService;
     private readonly AuthOptions _authOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserSessionsRepository _userSessionsRepository;
@@ -31,7 +33,8 @@ public class AuthService : IAuthService
         IKeysGenerator keysGenerator,
         IOptions<AuthOptions> authOptions,
         IHttpContextAccessor httpContextAccessor,
-        IUserSessionsRepository userSessionsRepositoryRepository)
+        IUserSessionsRepository userSessionsRepositoryRepository,
+        IUserInfoService userInfoService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -39,9 +42,9 @@ public class AuthService : IAuthService
         _keysGenerator = keysGenerator;
         _httpContextAccessor = httpContextAccessor;
         _userSessionsRepository = userSessionsRepositoryRepository;
+        _userInfoService = userInfoService;
         _authOptions = authOptions.Value;
     }
-
     public async Task<(UserInfoResponse CreatedUserInfo, string SessionKey)> CreateUser(RegisterRequest request)
     {
         bool emailInUse = await _unitOfWork.Users.IsExists(request.Email);

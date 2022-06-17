@@ -5,7 +5,7 @@ namespace LightBoard.DataAccess.Abstractions;
 public interface IUnitOfWork
 {
     IUsersRepository Users { get; }
-    IResetCodeEmailsRepository ResetCodeEmails { get; }
+    IGeneratedCodesRepository GeneratedCodes { get; }
     IBoardsRepository Boards { get; }
     IBoardMembersRepository BoardMembers { get; }
     IColumnsRepository Columns { get; }

@@ -3,6 +3,7 @@ using System;
 using LightBoard.DataAccess.Connection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightBoard.DataAccess.Migrations.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    partial class PostgreSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220616170331_AddIsEmailConfirmedFieldInUserTable")]
+    partial class AddIsEmailConfirmedFieldInUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,17 +24,12 @@ namespace LightBoard.DataAccess.Migrations.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LightBoard.Domain.Entities.Auth.CodeBase", b =>
+            modelBuilder.Entity("LightBoard.Domain.Entities.Auth.ResetPasswordCode", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("discriminator");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -49,11 +46,9 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("reset_code");
 
                     b.HasKey("Id")
-                        .HasName("pk_generated_codes");
+                        .HasName("pk_reset_code_emails");
 
-                    b.ToTable("generated_codes", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("CodeBase");
+                    b.ToTable("reset_code_emails", (string)null);
                 });
 
             modelBuilder.Entity("LightBoard.Domain.Entities.Auth.User", b =>
@@ -179,33 +174,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                     b.ToTable("cards", (string)null);
                 });
 
-            modelBuilder.Entity("LightBoard.Domain.Entities.Cards.CardAssignee", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CardId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("card_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_card_assignees");
-
-                    b.HasIndex("CardId")
-                        .HasDatabaseName("ix_card_assignees_card_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_card_assignees_user_id");
-
-                    b.ToTable("card_assignees", (string)null);
-                });
-
             modelBuilder.Entity("LightBoard.Domain.Entities.Columns.Column", b =>
                 {
                     b.Property<Guid>("Id")
@@ -233,20 +201,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasDatabaseName("ix_columns_board_id");
 
                     b.ToTable("columns", (string)null);
-                });
-
-            modelBuilder.Entity("LightBoard.Domain.Entities.Auth.ConfirmEmailCode", b =>
-                {
-                    b.HasBaseType("LightBoard.Domain.Entities.Auth.CodeBase");
-
-                    b.HasDiscriminator().HasValue("ConfirmEmailCode");
-                });
-
-            modelBuilder.Entity("LightBoard.Domain.Entities.Auth.ResetPasswordCode", b =>
-                {
-                    b.HasBaseType("LightBoard.Domain.Entities.Auth.CodeBase");
-
-                    b.HasDiscriminator().HasValue("ResetPasswordCode");
                 });
 
             modelBuilder.Entity("LightBoard.Domain.Entities.Boards.BoardMember", b =>
@@ -282,27 +236,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                     b.Navigation("Column");
                 });
 
-            modelBuilder.Entity("LightBoard.Domain.Entities.Cards.CardAssignee", b =>
-                {
-                    b.HasOne("LightBoard.Domain.Entities.Cards.Card", "Card")
-                        .WithMany("CardAssignees")
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_card_assignees_cards_card_temp_id");
-
-                    b.HasOne("LightBoard.Domain.Entities.Auth.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_card_assignees_users_user_temp_id");
-
-                    b.Navigation("Card");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LightBoard.Domain.Entities.Columns.Column", b =>
                 {
                     b.HasOne("LightBoard.Domain.Entities.Boards.Board", "Board")
@@ -320,11 +253,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                     b.Navigation("BoardMembers");
 
                     b.Navigation("Columns");
-                });
-
-            modelBuilder.Entity("LightBoard.Domain.Entities.Cards.Card", b =>
-                {
-                    b.Navigation("CardAssignees");
                 });
 
             modelBuilder.Entity("LightBoard.Domain.Entities.Columns.Column", b =>
