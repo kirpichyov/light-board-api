@@ -26,12 +26,14 @@ public class AuthServiceTests
     private readonly UnitOfWorkFakeWrapper _unitOfWorkFakeWrapper;
     private readonly Fake<IHashingProvider> _hashingProviderFake;
     private readonly Fake<IKeysGenerator> _keysGeneratorFake;
+    private readonly Fake<IUserInfoService> _userInfoService;
     private readonly IOptions<AuthOptions> _authOptions;
     private readonly Fake<IHttpContextAccessor> _httpAccessorAccessorFake;
     private readonly Fake<IUserSessionsRepository> _userSessionsRepositoryFake;
 
     public AuthServiceTests()
     {
+        _userInfoService = new Fake<IUserInfoService>();
         _hashingProviderFake = new Fake<IHashingProvider>();
         _keysGeneratorFake = new Fake<IKeysGenerator>();
         _httpAccessorAccessorFake = new Fake<IHttpContextAccessor>();
@@ -336,6 +338,7 @@ public class AuthServiceTests
         _keysGeneratorFake.FakedObject,
         _authOptions,
         _httpAccessorAccessorFake.FakedObject,
-        _userSessionsRepositoryFake.FakedObject
+        _userSessionsRepositoryFake.FakedObject,
+        _userInfoService.FakedObject
     );
 }

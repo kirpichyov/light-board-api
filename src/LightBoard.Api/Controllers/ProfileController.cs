@@ -14,6 +14,15 @@ namespace LightBoard.Api.Controllers
             _profileService = profileService;
         }
 
+        [HttpPost("request-confirmation-email")]
+        [ProducesResponseType(typeof(UpdateAvatarResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RequestConfirmEmail()
+        {
+            await _profileService.RequestEmailConfirmation();
+            return NoContent();
+        }
+
         [HttpPut("avatar")]
         [ProducesResponseType(typeof(UpdateAvatarResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]

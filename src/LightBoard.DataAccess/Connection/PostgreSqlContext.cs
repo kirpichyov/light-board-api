@@ -10,7 +10,7 @@ namespace LightBoard.DataAccess.Connection;
 public class PostgreSqlContext : DbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<ResetPasswordCode> ResetCodeEmails { get; set; }
+    public DbSet<CodeBase> GeneratedCodes { get; set; }
     public DbSet<Board> Boards { get; set; }
     public DbSet<BoardMember> BoardMembers { get; set; }
     public DbSet<Column> Columns { get; set; }
@@ -27,5 +27,10 @@ public class PostgreSqlContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+        
+        modelBuilder.Entity<CodeBase>()
+            .HasDiscriminator<string>("Discriminator")
+            .HasValue<ConfirmEmailCode>(nameof(ConfirmEmailCode))
+            .HasValue<ResetPasswordCode>(nameof(ResetPasswordCode));
     }
 }

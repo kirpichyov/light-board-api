@@ -1,6 +1,8 @@
-﻿using LightBoard.Application.Abstractions.Mapping;
+﻿using LightBoard.Application.Abstractions.Factories;
+using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Options;
 using LightBoard.Application.Abstractions.Services;
+using LightBoard.Application.Factories;
 using LightBoard.Application.Mapping;
 using LightBoard.Application.Services;
 using LightBoard.DataAccess;
@@ -9,6 +11,7 @@ using LightBoard.DataAccess.Abstractions.Connection;
 using LightBoard.DataAccess.Abstractions.Repositories;
 using LightBoard.DataAccess.Connection;
 using LightBoard.DataAccess.Repositories;
+using LightBoard.Domain.Entities.Auth;
 using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.Api.Extensions;
@@ -38,7 +41,7 @@ public static class ServiceCollectionExtensions
         
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUsersRepository, UsersRepository>();
-        services.AddScoped<IResetCodeEmailsRepository, ResetCodeEmailsRepository>();
+        services.AddScoped<IGeneratedCodesRepository, GeneratedCodesRepository>();
 
         return services;
     }
@@ -59,8 +62,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IKeysGenerator, KeysGenerator>();
         services.AddScoped<IApplicationMapper, ApplicationMapper>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ICodeService, CodeService>();
+        services.AddScoped<IGeneratedCodeFactory<ResetPasswordCode>, ResetPasswordCodeFactory>();
+        services.AddScoped<IGeneratedCodeFactory<ConfirmEmailCode>, ConfirmEmailCodeFactory>();
         services.AddSingleton<IBlobService, BlobService>();
         services.AddScoped<IBoardsService, BoardsService>();
         services.AddScoped<IProfileService, ProfileService>();

@@ -1,10 +1,22 @@
-﻿using LightBoard.Application.Models.Users;
+﻿using LightBoard.Application.Models.Auth;
+using LightBoard.Application.Models.Users;
 
 namespace LightBoard.Application.Abstractions.Services
 {
     public interface IProfileService
     {
-        public Task<UpdateAvatarResponse> UpdateAvatar(UpdateAvatarRequest request);
-        public Task<UserProfileResponse> GetProfile();
+        Task<UpdateAvatarResponse> UpdateAvatar(UpdateAvatarRequest request);
+        
+        Task<UserProfileResponse> GetProfile();
+        
+        Task UpdatePassword(UpdatePasswordRequest request);
+
+        Task RequestPasswordReset(ResetPasswordEmailRequest request);
+
+        Task ResetPassword(ResetPasswordRequest request);
+
+        Task RequestEmailConfirmation();
+        
+        Task ConfirmEmail(string confirmEmailCode);
     }
 }

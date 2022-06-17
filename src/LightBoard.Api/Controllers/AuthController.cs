@@ -11,12 +11,12 @@ namespace LightBoard.Api.Controllers;
 public class AuthController : ApiControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly IPasswordService _passwordService;
+    private readonly IProfileService _profileService;
 
-    public AuthController(IAuthService authService, IPasswordService passwordService)
+    public AuthController(IAuthService authService, IProfileService profileService)
     {
         _authService = authService;
-        _passwordService = passwordService;
+        _profileService = profileService;
     }
 
     [HttpPost("register")]
@@ -35,7 +35,7 @@ public class AuthController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
     {
-        await _passwordService.UpdatePassword(request);
+        await _profileService.UpdatePassword(request);
         return NoContent();
     }
     
@@ -44,7 +44,16 @@ public class AuthController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RequestPasswordReset([FromBody] ResetPasswordEmailRequest request)
     {
-        await _passwordService.RequestPasswordReset(request);
+        await _profileService.RequestPasswordReset(request);
+        return NoContent();
+    }
+    
+    [HttpPost("confirm-email")]
+    [ProducesResponseType(typeof(UpdateAvatarResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmail([FromForm] string confirmEmailCode)
+    {
+        await _profileService.ConfirmEmail(confirmEmailCode);
         return NoContent();
     }
     
@@ -53,7 +62,7 @@ public class AuthController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
-        await _passwordService.ResetPassword(request);
+        await _profileService.ResetPassword(request);
         return NoContent();
     }
     
