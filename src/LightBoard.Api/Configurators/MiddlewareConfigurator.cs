@@ -1,5 +1,6 @@
 ﻿using LightBoard.Api.Extensions;
 using LightBoard.Application.Abstractions.Options;
+using LightBoard.Shared.Api;
 using Serilog;
 
 namespace LightBoard.Api.Configurators;
@@ -28,6 +29,7 @@ public static class MiddlewareConfigurator
             corsPolicyBuilder.AllowAnyHeader();
             corsPolicyBuilder.AllowAnyMethod();
             corsPolicyBuilder.WithOrigins(identityOptions.AllowedCorsList ?? Array.Empty<string>());
+            corsPolicyBuilder.WithExposedHeaders(ApiHeaders.SessionKey);
         });
     
         webApplication.UseSerilogRequestLogging();
