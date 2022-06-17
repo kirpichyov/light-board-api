@@ -21,5 +21,5 @@ public interface IApplicationMapper
     ColumnResponse ToColumnResponse(Column column);
     CardResponse ToCardResponse(Card card);
     CardAssigneeResponse ToCardAssigneeResponse(CardAssignee cardAssignee);
-    IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule);
+    IReadOnlyCollection<TDestination>? MapCollection<TSource, TDestination>(IEnumerable<TSource>? sources, Func<TSource, TDestination> rule);
 }

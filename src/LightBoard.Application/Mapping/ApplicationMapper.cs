@@ -39,7 +39,7 @@ public class ApplicationMapper : IApplicationMapper
         {
             Id = board.Id,
             Name = board.Name,
-            Columns = board.Columns.Select(ToColumnResponse).ToArray()
+            Columns = MapCollectionOrEmpty(board.Columns, ToColumnResponse)
         };    
     }
 
@@ -82,7 +82,7 @@ public class ApplicationMapper : IApplicationMapper
             Title = card.Title,
             Description = card.Description,
             Order = card.Order,
-            Assignees = card.CardAssignees.Select(ToAssigneeResponse).ToArray()
+            Assignees = MapCollectionOrEmpty(card.CardAssignees, ToAssigneeResponse)
         };
     }
 
@@ -96,9 +96,14 @@ public class ApplicationMapper : IApplicationMapper
         };
     }
 
-    public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule)
+    public IReadOnlyCollection<TDestination>? MapCollection<TSource, TDestination>(IEnumerable<TSource>? sources, Func<TSource, TDestination> rule)
     {
-        return sources.Select(rule).ToArray();
+        return sources?.Select(rule).ToArray();
+    }
+
+    private IReadOnlyCollection<TDestination> MapCollectionOrEmpty<TSource, TDestination>(IEnumerable<TSource>? sources, Func<TSource, TDestination> rule)
+    {
+        return MapCollection(sources, rule) ?? Array.Empty<TDestination>();
     }
 
     private AssigneeResponse ToAssigneeResponse(CardAssignee cardAssignee)
