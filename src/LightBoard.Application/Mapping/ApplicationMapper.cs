@@ -81,12 +81,33 @@ public class ApplicationMapper : IApplicationMapper
             Id = card.Id,
             Title = card.Title,
             Description = card.Description,
-            Order = card.Order
+            Order = card.Order,
+            Assignees = card.CardAssignees.Select(ToAssigneeResponse).ToArray()
+        };
+    }
+
+    public CardAssigneeResponse ToCardAssigneeResponse(CardAssignee cardAssignee)
+    {
+        return new CardAssigneeResponse()
+        {
+            Id = cardAssignee.Id,
+            CardId = cardAssignee.CardId,
+            UserId = cardAssignee.UserId
         };
     }
 
     public IReadOnlyCollection<TDestination> MapCollection<TSource, TDestination>(IEnumerable<TSource> sources, Func<TSource, TDestination> rule)
     {
         return sources.Select(rule).ToArray();
+    }
+
+    private AssigneeResponse ToAssigneeResponse(CardAssignee cardAssignee)
+    {
+        return new AssigneeResponse()
+        {
+            Id = cardAssignee.Id,
+            Name = cardAssignee.User.Name,
+            UserId = cardAssignee.UserId
+        };
     }
 }

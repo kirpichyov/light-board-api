@@ -17,6 +17,8 @@ public class CardRepository : RepositoryBase<Card, Guid>, ICardsRepository
     {
         return await Context.Cards.Include(card => card.Column)
                    .ThenInclude(column => column.Cards)
+                   .Include(card => card.CardAssignees)
+                   .ThenInclude(cardAssignee => cardAssignee.User)
                    .SingleOrDefaultAsync(card => card.Id == id && 
                                                  card.Column.Board.BoardMembers.Any(member =>member.UserId == userId))
                ?? throw new NotFoundException("Card not found");

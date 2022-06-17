@@ -2,6 +2,8 @@
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Cards;
 using LightBoard.DataAccess.Abstractions;
+using LightBoard.Domain.Entities.Cards;
+using LightBoard.Shared.Exceptions;
 
 namespace LightBoard.Application.Services;
 
@@ -76,5 +78,42 @@ public class CardsService : ICardsService
         await _unitOfWork.SaveChangesAsync();
 
         return _mapper.ToCardResponse(card);
+    }
+
+    public async Task<CardAssigneeResponse> AddAssigneeToCard(Guid id, AddAssigneeToCardRequest request)
+    {
+        var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+
+        if (!await _unitOfWork.Boards.HasAccessToBoard(card.Column.BoardId, request.UserId))
+        {
+            throw new NotFoundException("Board is not found");
+        }
+
+        if (card.CardAssignees.Any(cardAssignee => cardAssignee.UserId == request.UserId))
+        {
+            throw new ValidationFailedException("Card already has this assignee");
+        }
+
+        var cardAssignee = new CardAssignee(request.UserId, id);
+        
+        _unitOfWork.CardAssignees.Add(cardAssignee);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return _mapper.ToCardAssigneeResponse(cardAssignee);
+    }
+
+    public async Task DeleteAssigneeFromCard(Guid cardAssigneeId)
+    {
+        var cardAssignee = await _unitOfWork.CardAssignees.GetById(cardAssigneeId);
+        
+        if (cardAssignee is null)
+        {
+            throw new NotFoundException("Assignee not found");
+        }
+        
+        _unitOfWork.CardAssignees.Delete(cardAssignee);
+        
+        await _unitOfWork.SaveChangesAsync();
     }
 }
