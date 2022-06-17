@@ -29,6 +29,8 @@ public static class ServicesConfigurator
 
         services.AddRouting(options => options.LowercaseUrls = true);
     
+        services.AddCors();
+        
         services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {

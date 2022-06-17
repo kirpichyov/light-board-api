@@ -11,27 +11,30 @@ public static class MiddlewareConfigurator
     {
         if (webApplication.Environment.IsDevelopment())
         {
-            webApplication.UseCors(policyBuilder =>
+            webApplication.UseCors(corsPolicyBuilder =>
             {
-                policyBuilder.AllowAnyOrigin();
-                policyBuilder.AllowAnyHeader();
-                policyBuilder.AllowAnyMethod();
+                corsPolicyBuilder.AllowAnyOrigin();
+                corsPolicyBuilder.AllowAnyHeader();
+                corsPolicyBuilder.AllowAnyMethod();
+                corsPolicyBuilder.WithExposedHeaders(ApiHeaders.SessionKey);
             });
         
             webApplication.UseSwagger();
             webApplication.UseSwaggerUI();
         }
-
-        webApplication.UseCors(corsPolicyBuilder =>
+        else
         {
-            AuthOptions identityOptions = webApplication.Configuration.BindFromAppSettings<AuthOptions>();
+            webApplication.UseCors(corsPolicyBuilder =>
+            {
+                AuthOptions identityOptions = webApplication.Configuration.BindFromAppSettings<AuthOptions>();
 
-            corsPolicyBuilder.AllowAnyHeader();
-            corsPolicyBuilder.AllowAnyMethod();
-            corsPolicyBuilder.WithOrigins(identityOptions.AllowedCorsList ?? Array.Empty<string>());
-            corsPolicyBuilder.WithExposedHeaders(ApiHeaders.SessionKey);
-        });
-    
+                corsPolicyBuilder.AllowAnyHeader();
+                corsPolicyBuilder.AllowAnyMethod();
+                corsPolicyBuilder.WithOrigins(identityOptions.AllowedCorsList ?? Array.Empty<string>());
+                corsPolicyBuilder.WithExposedHeaders(ApiHeaders.SessionKey);
+            });   
+        }
+
         webApplication.UseSerilogRequestLogging();
         webApplication.UseHttpsRedirection();
 
