@@ -8,4 +8,6 @@ public interface ICardsService
     Task DeleteCard(Guid id);
     Task<CardResponse> GetCard(Guid id);
     Task<CardResponse> UpdateOrder(Guid id, UpdateCardOrderRequest request);
+    Task<CardAssigneeResponse> AddAssigneeToCard(Guid id, AddAssigneeToCardRequest request);
+    Task DeleteAssigneeFromCard(Guid cardAssigneeId);
 }

@@ -14,7 +14,8 @@ public class UnitOfWork : IUnitOfWork
     private IBoardMembersRepository? _boardMembers;
     private IColumnsRepository? _columns;
     private ICardsRepository? _cards;
-    
+    private ICardAssigneeRepository? _cardAssignees;
+
     public UnitOfWork(PostgreSqlContext context, IResetCodeEmailsRepository resetCodeEmails)
     {
         _context = context;
@@ -27,6 +28,7 @@ public class UnitOfWork : IUnitOfWork
     public IBoardMembersRepository BoardMembers => _boardMembers ??= new BoardMembersRepository(_context);
     public IColumnsRepository Columns => _columns ??= new ColumnsRepository(_context);
     public ICardsRepository Cards => _cards ??= new CardRepository(_context);
+    public ICardAssigneeRepository CardAssignees => _cardAssignees ??= new CardAssigneeRepository(_context);
 
     public async Task SaveChangesAsync()
     {

@@ -6,4 +6,5 @@ public class CardResponse
     public string Title { get; set; }
     public string Description { get; set; }
     public int Order { get; set; }
+    public IReadOnlyCollection<AssigneeResponse> Assignees { get; set; }
 }

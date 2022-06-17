@@ -8,7 +8,7 @@ public class CreateColumnRequestValidator : AbstractValidator<CreateColumnReques
     public CreateColumnRequestValidator()
     {
         RuleFor(model => model.Name)
-            .Empty()
+            .NotEmpty()
             .MaximumLength(32);
     }
 }

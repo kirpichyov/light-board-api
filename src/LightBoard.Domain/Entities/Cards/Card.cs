@@ -22,4 +22,5 @@ public class Card : EntityBase<Guid>
     public int Order { get; set; }
     public Guid ColumnId { get; }
     public Column Column { get; }
+    public ICollection<CardAssignee> CardAssignees { get; }
 }

@@ -10,5 +10,6 @@ public interface IUnitOfWork
     IBoardMembersRepository BoardMembers { get; }
     IColumnsRepository Columns { get; }
     ICardsRepository Cards { get; }
+    ICardAssigneeRepository CardAssignees { get; }
     Task SaveChangesAsync();
 }
