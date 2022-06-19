@@ -84,7 +84,7 @@ public class ApplicationMapper : IApplicationMapper
             Description = card.Description,
             Order = card.Order,
             Assignees = MapCollectionOrEmpty(card.CardAssignees, ToAssigneeResponse),
-            Attachments = MapCollectionOrEmpty(card.Attachments, ToAttachmentResponse),
+            Attachments = MapCollectionOrEmpty(card.Attachments, ToCardAttachmentResponse),
         };
     }
 
