@@ -20,7 +20,7 @@ namespace LightBoard.DataAccess.Repositories
                        .ThenInclude(column => column.Cards)
                        .SingleOrDefaultAsync(attachment => attachment.Id == id &&
                                                      attachment.Card.Column.Board.BoardMembers.Any(member => member.UserId == userId))
-                   ?? throw new NotFoundException("Card not found");
+                   ?? throw new NotFoundException("Card attachment is not found");
         }
     }
 }

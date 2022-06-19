@@ -88,9 +88,9 @@ public class ApplicationMapper : IApplicationMapper
         };
     }
 
-    public AttachmentResponse ToAttachmentResponse(CardAttachment cardAttachment)
+    public CardAttachmentResponse ToAttachmentResponse(CardAttachment cardAttachment)
     {
-        return new AttachmentResponse()
+        return new CardAttachmentResponse()
         {
             Name = cardAttachment.Name,
             UploadedAtUtc = cardAttachment.UploadedAtUtc,

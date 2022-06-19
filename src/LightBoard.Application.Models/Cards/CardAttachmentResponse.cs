@@ -1,6 +1,6 @@
 ﻿namespace LightBoard.Application.Models.Cards
 {
-    public class AttachmentResponse
+    public class CardAttachmentResponse
     {
         public string Name { get; set; }
         public string Url { get; set; }

@@ -85,9 +85,9 @@ public class CardsService : ICardsService
         return _mapper.ToCardResponse(card);
     }
 
-    public async Task<CardResponse> AddAttachments(Guid id, CardAttachmentRequest request)
+    public async Task<CardAttachmentResponse> AddAttachments(Guid cardId, AddCardAttachmentRequest request)
     {
-        var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        var card = await _unitOfWork.Cards.GetForUser(cardId, _userInfo.UserId);
 
         var args = new UploadFormFileArgs()
         {
@@ -109,7 +109,7 @@ public class CardsService : ICardsService
         _unitOfWork.Attachments.Add(attachment);
 
         await _unitOfWork.SaveChangesAsync();
-        return _mapper.ToCardResponse(card);
+        return _mapper.ToCardAttachmentResponse(attachment);
     }
 
     public async Task<CardAssigneeResponse> AddAssigneeToCard(Guid id, AddAssigneeToCardRequest request)
