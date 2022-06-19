@@ -5,6 +5,7 @@ using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Users;
+using LightBoard.Domain.Entities.Attachments;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Cards;
@@ -82,7 +83,18 @@ public class ApplicationMapper : IApplicationMapper
             Title = card.Title,
             Description = card.Description,
             Order = card.Order,
-            Assignees = MapCollectionOrEmpty(card.CardAssignees, ToAssigneeResponse)
+            Assignees = MapCollectionOrEmpty(card.CardAssignees, ToAssigneeResponse),
+            Attachments = MapCollectionOrEmpty(card.Attachments, ToCardAttachmentResponse),
+        };
+    }
+
+    public CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment)
+    {
+        return new CardAttachmentResponse()
+        {
+            Name = cardAttachment.Name,
+            UploadedAtUtc = cardAttachment.UploadedAtUtc,
+            Url = cardAttachment.Url,
         };
     }
 

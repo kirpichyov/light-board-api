@@ -4,6 +4,7 @@ using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Users;
+using LightBoard.Domain.Entities.Attachments;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Cards;
@@ -20,6 +21,7 @@ public interface IApplicationMapper
     UserProfileResponse ToUserProfileResponse(User user);
     ColumnResponse ToColumnResponse(Column column);
     CardResponse ToCardResponse(Card card);
+    CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment);
     CardAssigneeResponse ToCardAssigneeResponse(CardAssignee cardAssignee);
     IReadOnlyCollection<TDestination>? MapCollection<TSource, TDestination>(IEnumerable<TSource>? sources, Func<TSource, TDestination> rule);
 }

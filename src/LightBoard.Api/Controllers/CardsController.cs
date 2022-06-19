@@ -79,4 +79,12 @@ public class CardsController : ApiControllerBase
         return NoContent();
     }
 
+
+    [HttpPost("{cardId:guid}/attachments")]
+    [ProducesResponseType(typeof(CardAttachmentResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
+    public async Task<CardAttachmentResponse> AddAttachment([FromRoute] Guid cardId, [FromForm] AddCardAttachmentRequest request)
+    {
+        return await _cardsService.AddAttachment(cardId, request);
+    }
 }

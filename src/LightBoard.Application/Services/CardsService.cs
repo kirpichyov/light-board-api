@@ -1,9 +1,11 @@
-﻿using LightBoard.Application.Abstractions.Mapping;
+﻿using LightBoard.Application.Abstractions.Arguments;
+using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Cards;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Shared.Exceptions;
+using LightBoard.Domain.Entities.Attachments;
 
 namespace LightBoard.Application.Services;
 
@@ -11,16 +13,19 @@ public class CardsService : ICardsService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserInfoService _userInfo;
-    private readonly IApplicationMapper _mapper;    
-    
+    private readonly IApplicationMapper _mapper;
+    private readonly IBlobService _blobService;
+
     public CardsService(
-        IUnitOfWork unitOfWork, 
-        IUserInfoService userInfo, 
-        IApplicationMapper mapper)
+        IUnitOfWork unitOfWork,
+        IUserInfoService userInfo,
+        IApplicationMapper mapper,
+        IBlobService blobService)
     {
         _unitOfWork = unitOfWork;
         _userInfo = userInfo;
         _mapper = mapper;
+        _blobService = blobService;
     }
 
     public async Task<CardResponse> UpdateCard(Guid id, UpdateCardRequest request)
@@ -38,7 +43,7 @@ public class CardsService : ICardsService
     public async Task DeleteCard(Guid id)
     {
         var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
-        
+
         _unitOfWork.Cards.Delete(card);
 
         await _unitOfWork.SaveChangesAsync();
@@ -69,15 +74,42 @@ public class CardsService : ICardsService
         else
         {
             var tempOrder = card.Order;
-        
+
             card.Order = request.Order;
 
             cardToSwap.Order = tempOrder;
         }
-        
+
         await _unitOfWork.SaveChangesAsync();
 
         return _mapper.ToCardResponse(card);
+    }
+
+    public async Task<CardAttachmentResponse> AddAttachment(Guid cardId, AddCardAttachmentRequest request)
+    {
+        var card = await _unitOfWork.Cards.GetForUser(cardId, _userInfo.UserId);
+
+        var args = new UploadFormFileArgs()
+        {
+            Container = BlobContainer.CardAttachments,
+            Purpose = BlobPurpose.Attachment,
+            FormFile = request.File
+        };
+
+        var result = await _blobService.UploadFormFile(args);
+
+        var attachment = new CardAttachment()
+        {
+            Name = request.File.FileName,
+            Url = result.Uri,
+            UploadedAtUtc = DateTime.UtcNow,
+            CardId = card.Id  
+        };
+
+        _unitOfWork.Attachments.Add(attachment);
+
+        await _unitOfWork.SaveChangesAsync();
+        return _mapper.ToCardAttachmentResponse(attachment);
     }
 
     public async Task<CardAssigneeResponse> AddAssigneeToCard(Guid id, AddAssigneeToCardRequest request)

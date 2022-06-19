@@ -18,6 +18,7 @@ public class ColumnsRepository : RepositoryBase<Column, Guid>, IColumnsRepositor
         return await Context.Columns.Include(column => column.Board)
                    .ThenInclude(board => board.Columns)
                    .Include(column => column.Cards)
+                   .ThenInclude(card => card.Attachments)
                    .SingleOrDefaultAsync(column => column.Id == id && column.Board.BoardMembers
                    .Any((member => member.UserId == userId)))
                ?? throw new NotFoundException("Column not found");

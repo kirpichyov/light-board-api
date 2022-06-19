@@ -10,4 +10,5 @@ public interface ICardsService
     Task<CardResponse> UpdateOrder(Guid id, UpdateCardOrderRequest request);
     Task<CardAssigneeResponse> AddAssigneeToCard(Guid id, AddAssigneeToCardRequest request);
     Task DeleteAssigneeFromCard(Guid cardAssigneeId);
+    Task<CardAttachmentResponse> AddAttachment(Guid cardId, AddCardAttachmentRequest request);
 }
