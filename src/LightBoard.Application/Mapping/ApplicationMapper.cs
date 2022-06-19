@@ -127,4 +127,14 @@ public class ApplicationMapper : IApplicationMapper
             UserId = cardAssignee.UserId
         };
     }
+
+    public CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment)
+    {
+        return new CardAttachmentResponse()
+        {
+            Name = cardAttachment.Name,
+            UploadedAtUtc = cardAttachment.UploadedAtUtc,
+            Url = cardAttachment.Url,
+        };
+    }
 }
