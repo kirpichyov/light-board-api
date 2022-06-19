@@ -1,4 +1,5 @@
 ﻿using LightBoard.DataAccess.EntityConfigurations;
+using LightBoard.Domain.Entities.Attachments;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Cards;
@@ -16,6 +17,7 @@ public class PostgreSqlContext : DbContext
     public DbSet<Column> Columns { get; set; }
     public DbSet<Card> Cards { get; set; }
     public DbSet<CardAssignee> CardAssignees { get; set; }
+    public DbSet<CardAttachment> CardAttachment { get; set; }
 
     public PostgreSqlContext(DbContextOptions<PostgreSqlContext> options)
         : base(options)

@@ -1,4 +1,5 @@
-﻿using LightBoard.Domain.Entities.Columns;
+﻿using LightBoard.Domain.Entities.Attachments;
+using LightBoard.Domain.Entities.Columns;
 
 namespace LightBoard.Domain.Entities.Cards;
 
@@ -23,4 +24,5 @@ public class Card : EntityBase<Guid>
     public Guid ColumnId { get; }
     public Column Column { get; }
     public ICollection<CardAssignee> CardAssignees { get; }
+    public ICollection<CardAttachment> Attachments { get; set; }
 }

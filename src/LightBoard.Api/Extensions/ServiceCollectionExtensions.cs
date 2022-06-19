@@ -71,6 +71,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IColumnsService, ColumnsService>();
         services.AddScoped<ICardsService, CardsService>();
+        services.AddScoped<ICardAttachmentService, CardAttachmentService>();
         
         return services;
     }

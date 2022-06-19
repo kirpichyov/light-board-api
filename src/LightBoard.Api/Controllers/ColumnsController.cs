@@ -15,7 +15,7 @@ public class ColumnsController : ApiControllerBase
         _columnsService = columnsService;
     }
 
-    [HttpPost("{columnId:guid}")]
+    [HttpPut("{columnId:guid}")]
     [ProducesResponseType(typeof(ColumnResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]

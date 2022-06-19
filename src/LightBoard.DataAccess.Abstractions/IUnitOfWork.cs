@@ -11,5 +11,6 @@ public interface IUnitOfWork
     IColumnsRepository Columns { get; }
     ICardsRepository Cards { get; }
     ICardAssigneeRepository CardAssignees { get; }
+    IAttachmentRepository Attachments { get; }
     Task SaveChangesAsync();
 }

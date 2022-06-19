@@ -7,4 +7,5 @@ public class CardResponse
     public string Description { get; set; }
     public int Order { get; set; }
     public IReadOnlyCollection<AssigneeResponse> Assignees { get; set; }
+    public IReadOnlyCollection<AttachmentResponse> Attachments { get; set; }
 }

@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     private IColumnsRepository? _columns;
     private ICardsRepository? _cards;
     private ICardAssigneeRepository? _cardAssignees;
+    private IAttachmentRepository? _attachments;
 
     public UnitOfWork(PostgreSqlContext context)
     {
@@ -28,6 +29,7 @@ public class UnitOfWork : IUnitOfWork
     public IColumnsRepository Columns => _columns ??= new ColumnsRepository(_context);
     public ICardsRepository Cards => _cards ??= new CardRepository(_context);
     public ICardAssigneeRepository CardAssignees => _cardAssignees ??= new CardAssigneeRepository(_context);
+    public IAttachmentRepository Attachments => _attachments ??= new AttachmentRepository(_context);
 
     public async Task SaveChangesAsync()
     {
