@@ -85,7 +85,7 @@ public class CardsService : ICardsService
         return _mapper.ToCardResponse(card);
     }
 
-    public async Task<CardAttachmentResponse> AddAttachments(Guid cardId, AddCardAttachmentRequest request)
+    public async Task<CardAttachmentResponse> AddAttachment(Guid cardId, AddCardAttachmentRequest request)
     {
         var card = await _unitOfWork.Cards.GetForUser(cardId, _userInfo.UserId);
 
