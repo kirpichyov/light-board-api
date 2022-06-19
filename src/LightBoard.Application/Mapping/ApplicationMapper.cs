@@ -88,7 +88,7 @@ public class ApplicationMapper : IApplicationMapper
         };
     }
 
-    public CardAttachmentResponse ToAttachmentResponse(CardAttachment cardAttachment)
+    public CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment)
     {
         return new CardAttachmentResponse()
         {
@@ -125,16 +125,6 @@ public class ApplicationMapper : IApplicationMapper
             Id = cardAssignee.Id,
             Name = cardAssignee.User.Name,
             UserId = cardAssignee.UserId
-        };
-    }
-
-    public CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment)
-    {
-        return new CardAttachmentResponse()
-        {
-            Name = cardAttachment.Name,
-            UploadedAtUtc = cardAttachment.UploadedAtUtc,
-            Url = cardAttachment.Url,
         };
     }
 }
