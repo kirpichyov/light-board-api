@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightBoard.DataAccess.Migrations.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    [Migration("20220621161807_AddBoardBackgroundToBoard")]
+    [Migration("20220621201930_AddBoardBackgroundToBoard")]
     partial class AddBoardBackgroundToBoard
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,9 +139,9 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("BoardBackgroundUrl")
+                    b.Property<string>("BackgroundUrl")
                         .HasColumnType("text")
-                        .HasColumnName("board_background_url");
+                        .HasColumnName("background_url");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean")

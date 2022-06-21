@@ -137,9 +137,9 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("BoardBackgroundUrl")
+                    b.Property<string>("BackgroundUrl")
                         .HasColumnType("text")
-                        .HasColumnName("board_background_url");
+                        .HasColumnName("background_url");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean")
