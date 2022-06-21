@@ -18,7 +18,7 @@ public class BoardsController : ApiControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
-    public async Task<BoardResponse> CreateBoard([FromBody] CreateBoardRequest request)
+    public async Task<BoardResponse> CreateBoard([FromForm] CreateBoardRequest request)
     {
         var board = await _boardsService.CreateBoard(request);
 
@@ -31,7 +31,7 @@ public class BoardsController : ApiControllerBase
     [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
-    public async Task<BoardResponse> UpdateBoard([FromRoute] Guid boardId, [FromBody] UpdateBoardRequest request)
+    public async Task<BoardResponse> UpdateBoard([FromRoute] Guid boardId, [FromForm] UpdateBoardRequest request)
     {
         var board = await _boardsService.UpdateBoard(boardId, request);
         
