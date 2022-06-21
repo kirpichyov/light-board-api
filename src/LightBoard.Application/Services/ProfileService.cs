@@ -22,6 +22,7 @@ namespace LightBoard.Application.Services
         private readonly IHashingProvider _hashingProvider;
         private readonly AuthOptions _authOptions;
         private readonly EmailTemplatesOptions _emailTemplatesOptions;
+        private readonly IMailingTemplatesService _mailingTemplatesService;
 
         public ProfileService(
             IUnitOfWork unitOfWork, 
@@ -32,7 +33,8 @@ namespace LightBoard.Application.Services
             IOptions<EmailTemplatesOptions> emailTemplateOptions, 
             ICodeService codeService, 
             IHashingProvider hashingProvider, 
-            IEmailService emailService)
+            IEmailService emailService, 
+            IMailingTemplatesService mailingTemplatesService)
         {
             _unitOfWork = unitOfWork;
             _mapper = applicationMapper;
@@ -43,6 +45,7 @@ namespace LightBoard.Application.Services
             _codeService = codeService;
             _hashingProvider = hashingProvider;
             _emailService = emailService;
+            _mailingTemplatesService = mailingTemplatesService;
         }
         
         public async Task RequestEmailConfirmation()
@@ -72,10 +75,10 @@ namespace LightBoard.Application.Services
                 throw new ValidationException("Code is invalid");
             }
 
-            var mailTemplate = await _blobService.GetBlobStringContentAsync(
-                BlobContainer.MailTemplates, _emailTemplatesOptions.EmailConfirmationTemplateFilename);
+            var mailTemplate = await _mailingTemplatesService.GetConfirmEmailTemplate(confirmEmailCode.ResetCode, user.Name);
             var mailArgs = new SendMailArgs(user.Email, "Email confirmation code", mailTemplate);
-            await _emailService.SendConfirmEmail(mailArgs, mailTemplate, confirmEmailCode.ResetCode, user.Name);
+
+            await _emailService.SendAsync(mailArgs);
         }
 
         public async Task ConfirmEmail(string confirmEmailCode)
@@ -119,10 +122,10 @@ namespace LightBoard.Application.Services
                 await _unitOfWork.SaveChangesAsync();
             }
 
-            var mailTemplate = await _blobService.GetBlobStringContentAsync(
-                BlobContainer.MailTemplates, _emailTemplatesOptions.PasswordResetTemplateFilename);
+            var mailTemplate = await _mailingTemplatesService.GetResetPasswordCodeTemplate(resetCodeEmail.ResetCode);
             var mailArgs = new SendMailArgs(request.Email, "Email confirmation code", mailTemplate);
-            await _emailService.SendResetCode(mailArgs, mailTemplate, resetCodeEmail.ResetCode);
+
+            await _emailService.SendAsync(mailArgs);
         }
 
         public async Task UpdatePassword(UpdatePasswordRequest request)

@@ -1,10 +1,7 @@
 ﻿using LightBoard.Application.Abstractions.Arguments;
 using LightBoard.Application.Abstractions.Options;
 using LightBoard.Application.Abstractions.Services;
-using LightBoard.Shared.Api;
-using MailKit;
 using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -22,21 +19,8 @@ public class EmailService : IEmailService
         _logger = logger;
         _options = options.Value;
     }
-    
-    public async Task SendConfirmEmail(SendMailArgs args, string mailTemplate, string resetCode, string username)
-    {
-        mailTemplate = mailTemplate.Replace("{code}", resetCode).Replace("{username}", username);
 
-        await SendAsync(args with { Html = mailTemplate });
-    }
-    
-    public async Task SendResetCode(SendMailArgs args, string mailTemplate, string resetCode)
-    {
-        mailTemplate = mailTemplate.Replace("{code}", resetCode);
-
-        await SendAsync(args with { Html = mailTemplate });
-    }
-    private async Task SendAsync(SendMailArgs args)
+    public async Task SendAsync(SendMailArgs args)
     {
         // create message
         var email = new MimeMessage();
