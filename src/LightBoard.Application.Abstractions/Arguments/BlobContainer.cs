@@ -4,5 +4,6 @@ public enum BlobContainer
 {
     UserAvatars,
     BoardBackgrounds,
-    CardAttachments
+    CardAttachments,
+    MailingTemplates
 }

@@ -19,6 +19,7 @@ namespace LightBoard.Application.Services
         private readonly ICodeService _codeService;
         private readonly IUserInfoService _userInfoService;
         private readonly IEmailService _emailService;
+        private readonly IMailingTemplateService _mailingTemplateService;
         private readonly IHashingProvider _hashingProvider;
         private readonly AuthOptions _authOptions;
 
@@ -27,10 +28,11 @@ namespace LightBoard.Application.Services
             IApplicationMapper applicationMapper, 
             IBlobService blobService,
             IUserInfoService userInfoService, 
-            IOptions<AuthOptions> authOptions, 
+            IOptions<AuthOptions> authOptions,
             ICodeService codeService, 
             IHashingProvider hashingProvider, 
-            IEmailService emailService)
+            IEmailService emailService, 
+            IMailingTemplateService mailingTemplateService)
         {
             _unitOfWork = unitOfWork;
             _mapper = applicationMapper;
@@ -40,6 +42,7 @@ namespace LightBoard.Application.Services
             _codeService = codeService;
             _hashingProvider = hashingProvider;
             _emailService = emailService;
+            _mailingTemplateService = mailingTemplateService;
         }
         
         public async Task RequestEmailConfirmation()
@@ -68,9 +71,11 @@ namespace LightBoard.Application.Services
             {
                 throw new ValidationException("Code is invalid");
             }
+
+            var mailTemplate = await _mailingTemplateService.GetConfirmEmailTemplate(confirmEmailCode.ResetCode, user.Name);
+            var mailArgs = new SendMailArgs(user.Email, "Email confirmation code", mailTemplate);
             
-            var mailArgs = new SendMailArgs(user.Email, "Email confirmation code", "It's your confirmation code:" + confirmEmailCode.ResetCode);
-            _emailService.Send(mailArgs);
+            await _emailService.SendAsync(mailArgs);
         }
 
         public async Task ConfirmEmail(string confirmEmailCode)
@@ -114,8 +119,10 @@ namespace LightBoard.Application.Services
                 await _unitOfWork.SaveChangesAsync();
             }
 
-            var mailArgs = new SendMailArgs(request.Email, "Verification code", "It's your verification code:" + resetCodeEmail.ResetCode);
-            _emailService.Send(mailArgs);
+            var mailTemplate = await _mailingTemplateService.GetResetPasswordCodeTemplate(resetCodeEmail.ResetCode);
+            var mailArgs = new SendMailArgs(request.Email, "Email confirmation code", mailTemplate);
+            
+            await _emailService.SendAsync(mailArgs);
         }
 
         public async Task UpdatePassword(UpdatePasswordRequest request)

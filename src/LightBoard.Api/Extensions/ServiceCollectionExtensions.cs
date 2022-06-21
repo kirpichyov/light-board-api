@@ -69,6 +69,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBlobService, BlobService>();
         services.AddScoped<IBoardsService, BoardsService>();
         services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IMailingTemplateService, MailingTemplateService>();
         services.AddScoped<IColumnsService, ColumnsService>();
         services.AddScoped<ICardsService, CardsService>();
         services.AddScoped<ICardAttachmentService, CardAttachmentService>();
@@ -80,6 +81,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddCustomSettings<AuthOptions>(configuration);
         services.AddCustomSettings<BlobOptions>(configuration);
+        services.AddCustomSettings<EmailTemplatesOptions>(configuration);
         services.AddCustomSettings<MailingOptions>(configuration);
         
         return services;

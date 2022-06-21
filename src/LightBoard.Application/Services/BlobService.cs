@@ -35,6 +35,19 @@ public class BlobService : IBlobService
         return await UploadBlob(args);
     }
 
+    public async Task<string> GetBlobStringContentAsync(BlobContainer blobContainer, string fileName)
+    {
+        var containerName = MapToContainerName(blobContainer);
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.GetBlobClient(fileName);
+
+        MemoryStream memoryStream = new MemoryStream();
+        await blobClient.DownloadToAsync(memoryStream);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        
+        return await new StreamReader(memoryStream).ReadToEndAsync();
+    }
+
     public async Task<UploadBlobResult> UploadStreamContent(UploadFileStreamArgs arguments)
     {
         var args = new UploadBlobArgs()
@@ -62,6 +75,7 @@ public class BlobService : IBlobService
             BlobContainer.UserAvatars => _blobOptions.ContainerNames.UserAvatars,
             BlobContainer.BoardBackgrounds => _blobOptions.ContainerNames.BoardBackgrounds,
             BlobContainer.CardAttachments => _blobOptions.ContainerNames.CardAttachments,
+            BlobContainer.MailingTemplates => _blobOptions.ContainerNames.MailingTemplates,
             _ => throw new ArgumentException($"Value '{container}' is unexpected.", nameof(container))
         };
     }
