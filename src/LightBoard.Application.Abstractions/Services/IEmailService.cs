@@ -4,5 +4,7 @@ namespace LightBoard.Application.Abstractions.Services;
 
 public interface IEmailService
 {
-    void Send(SendMailArgs args);
+    Task SendConfirmEmail(SendMailArgs args, string mailTemplate, string resetCode, string username);
+
+    Task SendResetCode(SendMailArgs args, string mailTemplate, string resetCode);
 }

@@ -29,10 +29,5 @@ public class PostgreSqlContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
-        
-        modelBuilder.Entity<CodeBase>()
-            .HasDiscriminator<string>("Discriminator")
-            .HasValue<ConfirmEmailCode>(nameof(ConfirmEmailCode))
-            .HasValue<ResetPasswordCode>(nameof(ResetPasswordCode));
     }
 }

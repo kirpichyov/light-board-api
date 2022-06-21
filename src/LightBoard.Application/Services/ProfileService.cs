@@ -21,6 +21,7 @@ namespace LightBoard.Application.Services
         private readonly IEmailService _emailService;
         private readonly IHashingProvider _hashingProvider;
         private readonly AuthOptions _authOptions;
+        private readonly EmailTemplatesOptions _emailTemplatesOptions;
 
         public ProfileService(
             IUnitOfWork unitOfWork, 
@@ -28,6 +29,7 @@ namespace LightBoard.Application.Services
             IBlobService blobService,
             IUserInfoService userInfoService, 
             IOptions<AuthOptions> authOptions, 
+            IOptions<EmailTemplatesOptions> emailTemplateOptions, 
             ICodeService codeService, 
             IHashingProvider hashingProvider, 
             IEmailService emailService)
@@ -37,6 +39,7 @@ namespace LightBoard.Application.Services
             _blobService = blobService;
             _userInfoService = userInfoService;
             _authOptions = authOptions.Value;
+            _emailTemplatesOptions = emailTemplateOptions.Value;
             _codeService = codeService;
             _hashingProvider = hashingProvider;
             _emailService = emailService;
@@ -68,9 +71,11 @@ namespace LightBoard.Application.Services
             {
                 throw new ValidationException("Code is invalid");
             }
-            
-            var mailArgs = new SendMailArgs(user.Email, "Email confirmation code", "It's your confirmation code:" + confirmEmailCode.ResetCode);
-            _emailService.Send(mailArgs);
+
+            var mailTemplate = await _blobService.GetBlobStringContentAsync(
+                BlobContainer.MailTemplates, _emailTemplatesOptions.EmailConfirmationTemplateFilename);
+            var mailArgs = new SendMailArgs(user.Email, "Email confirmation code", mailTemplate);
+            await _emailService.SendConfirmEmail(mailArgs, mailTemplate, confirmEmailCode.ResetCode, user.Name);
         }
 
         public async Task ConfirmEmail(string confirmEmailCode)
@@ -114,8 +119,10 @@ namespace LightBoard.Application.Services
                 await _unitOfWork.SaveChangesAsync();
             }
 
-            var mailArgs = new SendMailArgs(request.Email, "Verification code", "It's your verification code:" + resetCodeEmail.ResetCode);
-            _emailService.Send(mailArgs);
+            var mailTemplate = await _blobService.GetBlobStringContentAsync(
+                BlobContainer.MailTemplates, _emailTemplatesOptions.PasswordResetTemplateFilename);
+            var mailArgs = new SendMailArgs(request.Email, "Email confirmation code", mailTemplate);
+            await _emailService.SendResetCode(mailArgs, mailTemplate, resetCodeEmail.ResetCode);
         }
 
         public async Task UpdatePassword(UpdatePasswordRequest request)

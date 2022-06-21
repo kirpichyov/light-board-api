@@ -1,4 +1,5 @@
 ﻿using LightBoard.Domain.Entities;
+using LightBoard.Domain.Entities.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

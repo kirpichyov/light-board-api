@@ -22,7 +22,21 @@ public class EmailService : IEmailService
         _logger = logger;
         _options = options.Value;
     }
-    public async void Send(SendMailArgs args)
+    
+    public async Task SendConfirmEmail(SendMailArgs args, string mailTemplate, string resetCode, string username)
+    {
+        mailTemplate = mailTemplate.Replace("{code}", resetCode).Replace("{username}", username);
+
+        await SendAsync(args with { Html = mailTemplate });
+    }
+    
+    public async Task SendResetCode(SendMailArgs args, string mailTemplate, string resetCode)
+    {
+        mailTemplate = mailTemplate.Replace("{code}", resetCode);
+
+        await SendAsync(args with { Html = mailTemplate });
+    }
+    private async Task SendAsync(SendMailArgs args)
     {
         // create message
         var email = new MimeMessage();
