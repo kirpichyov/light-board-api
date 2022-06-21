@@ -1,6 +1,7 @@
 ﻿using LightBoard.Application.Abstractions.Arguments;
 using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Options;
+using LightBoard.Application.Abstractions.Results;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Users;
@@ -10,6 +11,7 @@ using LightBoard.Domain.Entities.Auth;
 using LightBoard.Shared.Api;
 using LightBoard.Shared.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
@@ -25,6 +27,8 @@ public class AuthService : IAuthService
     private readonly AuthOptions _authOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserSessionsRepository _userSessionsRepository;
+    private readonly IUserAvatarService _userAvatarService;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         IUnitOfWork unitOfWork,
@@ -34,7 +38,9 @@ public class AuthService : IAuthService
         IOptions<AuthOptions> authOptions,
         IHttpContextAccessor httpContextAccessor,
         IUserSessionsRepository userSessionsRepositoryRepository,
-        IUserInfoService userInfoService)
+        IUserInfoService userInfoService,
+        IUserAvatarService userAvatarService,
+        ILogger<AuthService> logger)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -44,6 +50,8 @@ public class AuthService : IAuthService
         _userSessionsRepository = userSessionsRepositoryRepository;
         _userInfoService = userInfoService;
         _authOptions = authOptions.Value;
+        _userAvatarService = userAvatarService;
+        _logger = logger;
     }
     public async Task<(UserInfoResponse CreatedUserInfo, string SessionKey)> CreateUser(RegisterRequest request)
     {
@@ -55,7 +63,18 @@ public class AuthService : IAuthService
         }
         
         User user = _mapper.ToUser(request, _hashingProvider);
-        
+
+        try
+        {
+            var avatarCreationResult = await _userAvatarService.GenerateUserAvatar();
+            user.AvatarUrl = avatarCreationResult.Uri;
+            user.AvatarBlobName = avatarCreationResult.BlobName;
+        }
+        catch (ExternalApiException e)
+        {
+            _logger.LogError(e, e.Message);
+        }
+
         _unitOfWork.Users.Add(user);
         await _unitOfWork.SaveChangesAsync();
 
