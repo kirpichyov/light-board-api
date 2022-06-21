@@ -1,4 +1,5 @@
-﻿using LightBoard.Application.Abstractions.Mapping;
+﻿using LightBoard.Application.Abstractions.Arguments;
+using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Columns;
@@ -6,6 +7,7 @@ using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Columns;
 using LightBoard.Shared.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace LightBoard.Application.Services;
 
@@ -14,15 +16,17 @@ public class BoardsService : IBoardsService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserInfoService _userInfo;
     private readonly IApplicationMapper _mapper;
-    
+    private readonly IBlobService _blobService;
     public BoardsService(
-        IUnitOfWork unitOfWork, 
-        IUserInfoService userInfo, 
-        IApplicationMapper mapper)
+        IUnitOfWork unitOfWork,
+        IUserInfoService userInfo,
+        IApplicationMapper mapper,
+        IBlobService blobService)
     {
         _unitOfWork = unitOfWork;
         _userInfo = userInfo;
         _mapper = mapper;
+        _blobService = blobService;
     }
 
     public async Task<BoardResponse> CreateBoard(CreateBoardRequest request)
@@ -30,7 +34,12 @@ public class BoardsService : IBoardsService
         var board = new Board(request.Name);
 
         var boardMember = new BoardMember(_userInfo.UserId, board.Id);
-        
+
+        if (request.BoardBackground != null)
+        {
+            board.BackgroundUrl = await UploadBoardBackground(request.BoardBackground);
+        }
+
         _unitOfWork.Boards.Add(board);
         _unitOfWork.BoardMembers.Add(boardMember);
 
@@ -44,9 +53,14 @@ public class BoardsService : IBoardsService
         Board board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
 
         board.Name = request.Name;
-        
+
+        if (request.Background != null)
+        {
+            board.BackgroundUrl = await UploadBoardBackground(request.Background);
+        }
+
         _unitOfWork.Boards.Update(board);
-        
+
         await _unitOfWork.SaveChangesAsync();
 
         return _mapper.ToBoardResponse(board);
@@ -92,7 +106,7 @@ public class BoardsService : IBoardsService
         }
 
         BoardMember member = new BoardMember(user.Id, board.Id);
-        
+
         _unitOfWork.BoardMembers.Add(member);
 
         await _unitOfWork.SaveChangesAsync();
@@ -108,12 +122,12 @@ public class BoardsService : IBoardsService
         {
             throw new AccessDeniedException();
         }
-        
+
         if (!await _unitOfWork.Boards.HasAccessToBoard(boardMember.BoardId, _userInfo.UserId))
         {
             throw new AccessDeniedException();
         }
-        
+
         _unitOfWork.BoardMembers.Delete(boardMember);
 
         await _unitOfWork.SaveChangesAsync();
@@ -122,16 +136,16 @@ public class BoardsService : IBoardsService
     public async Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers(Guid id)
     {
         var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
-        
+
         return _mapper.MapCollection(board.BoardMembers, _mapper.ToBoardMemberResponse);
     }
 
     public async Task<ColumnResponse> CreateColumn(Guid id, CreateColumnRequest request)
     {
         var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
-        
+
         var column = new Column(request.Name, id, board.Columns.Count + 1);
-        
+
         _unitOfWork.Columns.Add(column);
 
         await _unitOfWork.SaveChangesAsync();
@@ -144,5 +158,17 @@ public class BoardsService : IBoardsService
         var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
 
         return _mapper.MapCollection(board.Columns, _mapper.ToColumnResponse);
+    }
+
+    private async Task<string> UploadBoardBackground(IFormFile boardBackground)
+    {
+        var args = new UploadFormFileArgs()
+        {
+            Container = BlobContainer.BoardBackgrounds,
+            Purpose = BlobPurpose.Inline,
+            FormFile = boardBackground
+        };
+        var result = await _blobService.UploadFormFile(args);
+        return result.Uri;
     }
 }

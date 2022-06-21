@@ -7,4 +7,5 @@ public class BoardResponse
     public Guid Id { get; set; }
     public string Name { get; set; }
     public IReadOnlyCollection<ColumnResponse> Columns { get; set; }
+    public string BoardBackgroundUrl { get; set; }
 }
