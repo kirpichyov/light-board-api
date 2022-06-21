@@ -11,6 +11,6 @@ public class BoardConfiguration : EntityConfigurationBase<Board, Guid>
 
         builder.Property(board => board.Name).IsRequired();
         builder.Property(user => user.IsArchived).IsRequired();
-        builder.Property(board => board.BoardBackgroundUrl).IsRequired(false);
+        builder.Property(board => board.BackgroundUrl).IsRequired(false);
     }
 }

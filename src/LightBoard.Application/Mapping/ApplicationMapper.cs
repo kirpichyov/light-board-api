@@ -40,7 +40,7 @@ public class ApplicationMapper : IApplicationMapper
         {
             Id = board.Id,
             Name = board.Name,
-            BoardBackgroundUrl = board.BoardBackgroundUrl,
+            BoardBackgroundUrl = board.BackgroundUrl,
             Columns = MapCollectionOrEmpty(board.Columns, ToColumnResponse)
         };    
     }

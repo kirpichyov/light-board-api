@@ -37,7 +37,7 @@ public class BoardsService : IBoardsService
 
         if (request.BoardBackground != null)
         {
-            board.BoardBackgroundUrl = await UploadBoardBackground(request.BoardBackground);
+            board.BackgroundUrl = await UploadBoardBackground(request.BoardBackground);
         }
 
         _unitOfWork.Boards.Add(board);
@@ -54,9 +54,9 @@ public class BoardsService : IBoardsService
 
         board.Name = request.Name;
 
-        if (request.BoardBackground != null)
+        if (request.Background != null)
         {
-            board.BoardBackgroundUrl = await UploadBoardBackground(request.BoardBackground);
+            board.BackgroundUrl = await UploadBoardBackground(request.Background);
         }
 
         _unitOfWork.Boards.Update(board);

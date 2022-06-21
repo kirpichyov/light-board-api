@@ -8,10 +8,10 @@ public class CreateBoardRequestValidator : AbstractValidator<CreateBoardRequest>
     private const int MaxAllowedImageSizeBytes = 10000000;
 
     private static readonly string[] AllowedImageContentTypes =
-        {
-            "image/jpeg",
-            "image/png"
-        };
+    {
+        "image/jpeg",
+        "image/png"
+    };
     public CreateBoardRequestValidator()
     {
         RuleFor(model => model.Name)
