@@ -5,5 +5,5 @@ namespace LightBoard.Application.Models.Boards;
 public class CreateBoardRequest
 {
     public string Name { get; set; }
-    public IFormFile? BoardBackground { get; set; }
+    public IFormFile? Background { get; set; }
 }

@@ -18,6 +18,7 @@ public class Board : EntityBase<Guid>
     public string Name { get; set; }
     public bool IsArchived { get; set; }
     public string BackgroundUrl { get; set; }
+    public string BackgroundBlobName { get; set; }
     public ICollection<BoardMember> BoardMembers { get; }
     public ICollection<Column> Columns { get; }
 }
