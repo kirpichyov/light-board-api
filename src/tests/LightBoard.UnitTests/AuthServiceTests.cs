@@ -13,6 +13,7 @@ using LightBoard.Shared.Api;
 using LightBoard.Shared.Exceptions;
 using LightBoard.Tests.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
@@ -30,6 +31,8 @@ public class AuthServiceTests
     private readonly IOptions<AuthOptions> _authOptions;
     private readonly Fake<IHttpContextAccessor> _httpAccessorAccessorFake;
     private readonly Fake<IUserSessionsRepository> _userSessionsRepositoryFake;
+    private readonly Fake<IUserAvatarService> _userAvatarServiceFake;
+    private readonly Fake<ILogger<AuthService>> _loggerFake;
 
     public AuthServiceTests()
     {
@@ -39,6 +42,8 @@ public class AuthServiceTests
         _httpAccessorAccessorFake = new Fake<IHttpContextAccessor>();
         _userSessionsRepositoryFake = new Fake<IUserSessionsRepository>();
         _unitOfWorkFakeWrapper = new UnitOfWorkFakeWrapper();
+        _userAvatarServiceFake = new Fake<IUserAvatarService>();
+        _loggerFake = new Fake<ILogger<AuthService>>();
         
         _authOptions = Options.Create(new AuthOptions()
         {
@@ -339,6 +344,8 @@ public class AuthServiceTests
         _authOptions,
         _httpAccessorAccessorFake.FakedObject,
         _userSessionsRepositoryFake.FakedObject,
-        _userInfoService.FakedObject
+        _userInfoService.FakedObject,
+        _userAvatarServiceFake.FakedObject,
+        _loggerFake.FakedObject
     );
 }

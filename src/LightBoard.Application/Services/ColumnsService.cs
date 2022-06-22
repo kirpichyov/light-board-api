@@ -84,8 +84,9 @@ public class ColumnsService : IColumnsService
     public async Task<CardResponse> CreateCard(Guid id, CreateCardRequest request)
     {
         var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
-
+        
         var card = new Card(column.Id, request.Title, request.Description, column.Cards.Count + 1);
+        card.Priority = _mapper.ToPriority(request.Priority);
         
         _unitOfWork.Cards.Add(card);
 

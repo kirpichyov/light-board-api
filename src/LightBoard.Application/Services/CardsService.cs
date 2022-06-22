@@ -34,6 +34,7 @@ public class CardsService : ICardsService
 
         card.Title = request.Title;
         card.Description = request.Description;
+        card.Priority = _mapper.ToPriority(request.Priority);
 
         await _unitOfWork.SaveChangesAsync();
 

@@ -3,6 +3,7 @@ using System;
 using LightBoard.DataAccess.Connection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightBoard.DataAccess.Migrations.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    partial class PostgreSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220622111629_AddPriorityToCard")]
+    partial class AddPriorityToCard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,15 +138,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("BackgroundBlobName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("background_blob_name");
-
-                    b.Property<string>("BackgroundUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("background_url");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean")
