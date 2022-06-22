@@ -1,5 +1,6 @@
 ﻿using LightBoard.Application.Abstractions.Arguments;
 using LightBoard.Application.Abstractions.Mapping;
+using LightBoard.Application.Abstractions.Results;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Columns;
@@ -35,9 +36,9 @@ public class BoardsService : IBoardsService
 
         var boardMember = new BoardMember(_userInfo.UserId, board.Id);
 
-        if (request.BoardBackground != null)
+        if (request.Background != null)
         {
-            board.BackgroundUrl = await UploadBoardBackground(request.BoardBackground);
+            await UploadBoardBackground(request.Background, board);
         }
 
         _unitOfWork.Boards.Add(board);
@@ -56,7 +57,7 @@ public class BoardsService : IBoardsService
 
         if (request.Background != null)
         {
-            board.BackgroundUrl = await UploadBoardBackground(request.Background);
+            await UploadBoardBackground(request.Background, board);
         }
 
         _unitOfWork.Boards.Update(board);
@@ -160,7 +161,7 @@ public class BoardsService : IBoardsService
         return _mapper.MapCollection(board.Columns, _mapper.ToColumnResponse);
     }
 
-    private async Task<string> UploadBoardBackground(IFormFile boardBackground)
+    private async Task<Board> UploadBoardBackground(IFormFile boardBackground, Board board)
     {
         var args = new UploadFormFileArgs()
         {
@@ -168,7 +169,14 @@ public class BoardsService : IBoardsService
             Purpose = BlobPurpose.Inline,
             FormFile = boardBackground
         };
+       
+        if (board.BackgroundBlobName != null)
+        {
+            await _blobService.DeleteFile(BlobContainer.BoardBackgrounds, board.BackgroundBlobName);
+        }
         var result = await _blobService.UploadFormFile(args);
-        return result.Uri;
+        board.BackgroundUrl = result.Uri;
+        board.BackgroundBlobName = result.BlobName;
+        return board;
     }
 }

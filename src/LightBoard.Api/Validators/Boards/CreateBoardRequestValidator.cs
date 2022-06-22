@@ -18,20 +18,20 @@ public class CreateBoardRequestValidator : AbstractValidator<CreateBoardRequest>
             .NotEmpty()
             .MaximumLength(32);
 
-        When(request => request.BoardBackground != null, () =>
+        When(request => request.Background != null, () =>
         {
-            RuleFor(request => request.BoardBackground.Length)
+            RuleFor(request => request.Background.Length)
                 .GreaterThan(0)
                 .WithMessage("File empty");
 
-            RuleFor(request => request.BoardBackground.ContentType)
+            RuleFor(request => request.Background.ContentType)
                 .NotEmpty();
 
-            RuleFor(request => request.BoardBackground.Length)
+            RuleFor(request => request.Background.Length)
                 .LessThanOrEqualTo(MaxAllowedImageSizeBytes)
                 .WithMessage("Violate max size");
 
-            RuleFor(request => request.BoardBackground.ContentType)
+            RuleFor(request => request.Background.ContentType)
                 .Must(contentType => AllowedImageContentTypes.Contains(contentType))
                 .WithMessage("File extension forbiden");
         });
