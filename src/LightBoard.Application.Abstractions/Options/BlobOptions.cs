@@ -13,4 +13,5 @@ public class BlobContainersNode
     [Required] public string UserAvatars { get; set; }
     [Required] public string BoardBackgrounds { get; set; }
     [Required] public string CardAttachments { get; set; }
+    [Required] public string MailingTemplates { get; set; }
 }

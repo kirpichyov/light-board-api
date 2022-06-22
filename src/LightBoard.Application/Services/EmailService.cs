@@ -22,7 +22,7 @@ public class EmailService : IEmailService
         _logger = logger;
         _options = options.Value;
     }
-    public async void Send(SendMailArgs args)
+    public async Task SendAsync(SendMailArgs args)
     {
         // create message
         var email = new MimeMessage();
@@ -33,6 +33,8 @@ public class EmailService : IEmailService
 
         // send email
         using var smtp = new SmtpClient();
+        smtp.CheckCertificateRevocation = false;
+        smtp.LocalDomain = "lightboard-mailsender";
         try
         {
             await smtp.ConnectAsync(_options.Host, _options.Port);

@@ -4,5 +4,5 @@ namespace LightBoard.Application.Abstractions.Services;
 
 public interface IEmailService
 {
-    void Send(SendMailArgs args);
+    Task SendAsync(SendMailArgs args);
 }
