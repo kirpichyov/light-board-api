@@ -9,6 +9,6 @@ public class ModelFaker
     
     public User GivenUser()
     {
-        return new User(_faker.Person.Email, _faker.Person.FirstName, _faker.Internet.Password());
+        return new User(_faker.Person.Email, _faker.Person.FirstName, _faker.Person.LastName, _faker.Internet.Password());
     }
 }

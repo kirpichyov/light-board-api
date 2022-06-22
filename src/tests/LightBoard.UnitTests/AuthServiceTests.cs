@@ -89,7 +89,7 @@ public class AuthServiceTests
 
             result.CreatedUserInfo.Should().NotBeNull();
             result.CreatedUserInfo.Email.Should().Be(request.Email);
-            result.CreatedUserInfo.Name.Should().Be(request.Name);
+            result.CreatedUserInfo.FullName.Should().Be($"{request.Name} {request.Surname}");
 
             _unitOfWorkFakeWrapper.Users
                 .CallsTo(repository => repository.Add(A<User>._))

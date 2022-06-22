@@ -24,7 +24,7 @@ public class ApplicationMapper : IApplicationMapper
             throw new ArgumentNullException(nameof(request));
         }
         
-        return new User(request.Email, request.Name, hashingProvider.GetHash(request.Password));
+        return new User(request.Email, request.Name, request.Surname, hashingProvider.GetHash(request.Password));
     }
 
     public UserInfoResponse ToUserInfoResponse(User user)
@@ -32,7 +32,7 @@ public class ApplicationMapper : IApplicationMapper
         return new UserInfoResponse()
         {
             Email = user.Email,
-            Name = user.Name
+            FullName = user.FullName
         };
     }
     
@@ -64,6 +64,8 @@ public class ApplicationMapper : IApplicationMapper
         {
             Email = user.Email,
             Name = user.Name,
+            Surname = user.Surname,
+            FullName = user.FullName,
             UserAvatar = user.AvatarUrl
         };
     }
@@ -127,7 +129,7 @@ public class ApplicationMapper : IApplicationMapper
         return new AssigneeResponse()
         {
             Id = cardAssignee.Id,
-            Name = cardAssignee.User.Name,
+            FullName = cardAssignee.User.FullName,
             UserId = cardAssignee.UserId
         };
     }

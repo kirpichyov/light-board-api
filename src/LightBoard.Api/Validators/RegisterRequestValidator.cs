@@ -19,5 +19,10 @@ public class RegisterRequestValidator : PasswordRequestValidator<RegisterRequest
             .NotEmpty()
             .MinimumLength(1)
             .MaximumLength(32);
+        
+        RuleFor(model => model.Surname)
+            .NotEmpty()
+            .MinimumLength(1)
+            .MaximumLength(32);
     }
 }
