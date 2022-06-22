@@ -4,12 +4,14 @@ using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
+using LightBoard.Application.Models.Enums;
 using LightBoard.Application.Models.Users;
 using LightBoard.Domain.Entities.Attachments;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Domain.Entities.Columns;
+using LightBoard.Domain.Enums;
 
 namespace LightBoard.Application.Mapping;
 
@@ -83,6 +85,7 @@ public class ApplicationMapper : IApplicationMapper
             Title = card.Title,
             Description = card.Description,
             Order = card.Order,
+            Priority = ToPriorityModel(card.Priority),
             Assignees = MapCollectionOrEmpty(card.CardAssignees, ToAssigneeResponse),
             Attachments = MapCollectionOrEmpty(card.Attachments, ToCardAttachmentResponse),
         };
@@ -125,6 +128,32 @@ public class ApplicationMapper : IApplicationMapper
             Id = cardAssignee.Id,
             Name = cardAssignee.User.Name,
             UserId = cardAssignee.UserId
+        };
+    }
+
+    public PriorityModel ToPriorityModel(Priority priority)
+    {
+        return priority switch
+        {
+            Priority.None => PriorityModel.None,
+            Priority.Low => PriorityModel.Low,
+            Priority.Lowest => PriorityModel.Lowest,
+            Priority.High => PriorityModel.High,
+            Priority.Highest => PriorityModel.Highest,
+            Priority.Normal => PriorityModel.Normal
+        };
+    }
+
+    public Priority ToPriority(PriorityModel priorityModel)
+    {
+        return priorityModel switch
+        {
+            PriorityModel.None => Priority.None,
+            PriorityModel.Low => Priority.Low,
+            PriorityModel.Lowest => Priority.Lowest,
+            PriorityModel.High => Priority.High,
+            PriorityModel.Highest => Priority.Highest ,
+            PriorityModel.Normal => Priority.Normal
         };
     }
 }

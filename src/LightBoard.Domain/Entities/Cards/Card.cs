@@ -1,5 +1,6 @@
 ﻿using LightBoard.Domain.Entities.Attachments;
 using LightBoard.Domain.Entities.Columns;
+using LightBoard.Domain.Enums;
 
 namespace LightBoard.Domain.Entities.Cards;
 
@@ -23,6 +24,7 @@ public class Card : EntityBase<Guid>
     public int Order { get; set; }
     public Guid ColumnId { get; }
     public Column Column { get; }
+    public Priority Priority { get; set; }
     public ICollection<CardAssignee> CardAssignees { get; }
     public ICollection<CardAttachment> Attachments { get; set; }
 }
