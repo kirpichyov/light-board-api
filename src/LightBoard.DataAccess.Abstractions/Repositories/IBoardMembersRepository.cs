@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface IBoardMembersRepository : IRepositoryBase<BoardMember, Guid>
+public interface IBoardMembersRepository : IRelationalRepositoryBase<BoardMember, Guid>
 {
     Task<BoardMember> GetById(Guid id);
 }

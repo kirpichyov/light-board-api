@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface ICardAssigneeRepository : IRepositoryBase<CardAssignee, Guid>
+public interface ICardAssigneeRepository : IRelationalRepositoryBase<CardAssignee, Guid>
 {
     Task<CardAssignee> GetById(Guid id);
 }

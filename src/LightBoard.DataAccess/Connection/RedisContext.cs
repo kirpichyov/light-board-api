@@ -5,10 +5,10 @@ namespace LightBoard.DataAccess.Connection;
 
 public class RedisContext : IRedisContext, IDisposable
 {
-    private readonly ConnectionMultiplexer RedisConnection;
+    private readonly ConnectionMultiplexer _redisConnection;
 
     public IDatabase Database { get; }
-    
+
     public RedisContext(string connectionString)
     {
         if (string.IsNullOrEmpty(connectionString))
@@ -16,18 +16,28 @@ public class RedisContext : IRedisContext, IDisposable
             throw new ArgumentException("Connection string can't be null or empty");
         }
 
-        if (RedisConnection is not null)
+        if (_redisConnection is not null)
         {
             throw new InvalidOperationException("Connection is already established");
         }
 
-        RedisConnection = ConnectionMultiplexer.Connect(connectionString);
-        Database = RedisConnection.GetDatabase();
+        _redisConnection = ConnectionMultiplexer.Connect(connectionString);
+        Database = _redisConnection.GetDatabase();
+    }
+
+    public RedisKey[] GetKeys(string pattern)
+    {
+        var endPoint = _redisConnection.GetEndPoints().First();
+
+        return _redisConnection
+            .GetServer(endPoint)
+            .Keys(pattern: pattern)
+            .ToArray();
     }
 
     public void Dispose()
     {
-        RedisConnection?.Close();
-        RedisConnection?.Dispose();
+        _redisConnection?.Close();
+        _redisConnection?.Dispose();
     }
 }

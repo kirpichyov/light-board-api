@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
     private ICardsRepository? _cards;
     private ICardAssigneeRepository? _cardAssignees;
     private IAttachmentRepository? _attachments;
+    private IUserNotificationsRepository? _userNotifications;
 
     public UnitOfWork(PostgreSqlContext context)
     {
@@ -30,6 +31,7 @@ public class UnitOfWork : IUnitOfWork
     public ICardsRepository Cards => _cards ??= new CardRepository(_context);
     public ICardAssigneeRepository CardAssignees => _cardAssignees ??= new CardAssigneeRepository(_context);
     public IAttachmentRepository Attachments => _attachments ??= new AttachmentRepository(_context);
+    public IUserNotificationsRepository UserNotifications => _userNotifications ??= new UserNotificationsRepository(_context);
 
     public async Task SaveChangesAsync()
     {

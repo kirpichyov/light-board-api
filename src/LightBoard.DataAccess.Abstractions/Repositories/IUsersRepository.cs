@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface IUsersRepository : IRepositoryBase<User, Guid>
+public interface IUsersRepository : IRelationalRepositoryBase<User, Guid>
 {
     Task<bool> IsExists(string email);
     Task<User?> Get(string email);

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.DataAccess.Repositories;
 
-public class UsersRepository : RepositoryBase<User, Guid>, IUsersRepository
+public class UsersRepository : RelationalRepositoryBase<User, Guid>, IUsersRepository
 {
     public UsersRepository(PostgreSqlContext context)
         : base(context)

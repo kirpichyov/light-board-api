@@ -2,9 +2,6 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface IUserSessionsRepository
+public interface IUserSessionsRepository : IRedisRepositoryBase<UserSession, string>
 {
-    Task<UserSession?> GetAsync(string sessionKey);
-    Task AddAsync(UserSession session);
-    Task RemoveAsync(string sessionKey);
 }
