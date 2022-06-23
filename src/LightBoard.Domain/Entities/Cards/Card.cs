@@ -6,12 +6,13 @@ namespace LightBoard.Domain.Entities.Cards;
 
 public class Card : EntityBase<Guid>
 {
-    public Card(Guid columnId, string title, string description, int order)
+    public Card(Guid columnId, string title, string description, DateTime? deadlineAtUtc, int order)
         : base(Guid.NewGuid())
     {
         ColumnId = columnId;
         Title = title;
         Description = description;
+        DeadlineAtUtc = deadlineAtUtc;
         Order = order;
     }
 
@@ -22,6 +23,7 @@ public class Card : EntityBase<Guid>
     public string Title { get; set; }
     public string Description { get; set; }
     public int Order { get; set; }
+    public DateTime? DeadlineAtUtc { get; set; }
     public Guid ColumnId { get; }
     public Column Column { get; }
     public Priority Priority { get; set; }
