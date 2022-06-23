@@ -1,8 +1,10 @@
-﻿using LightBoard.Application.Abstractions.Factories;
+﻿using LightBoard.Api.Quartz;
+using LightBoard.Application.Abstractions.Factories;
 using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Options;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Factories;
+using LightBoard.Application.Jobs;
 using LightBoard.Application.Mapping;
 using LightBoard.Application.Services;
 using LightBoard.DataAccess;
@@ -13,6 +15,8 @@ using LightBoard.DataAccess.Connection;
 using LightBoard.DataAccess.Repositories;
 using LightBoard.Domain.Entities.Auth;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
+using Quartz.Logging;
 
 namespace LightBoard.Api.Extensions;
 
@@ -42,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUsersRepository, UsersRepository>();
         services.AddScoped<IGeneratedCodesRepository, GeneratedCodesRepository>();
+        services.AddScoped<IUserNotificationsRepository, UserNotificationsRepository>();
 
         return services;
     }
@@ -52,7 +57,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IRedisContext, RedisContext>(_ => new RedisContext(connectionString));
         services.AddScoped<IUserSessionsRepository, UserSessionsRepository>();
-        
+
         return services;
     }
 
@@ -78,6 +83,40 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddBackgroundJobs(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddQuartz(quartz =>
+        {
+            LogProvider.SetCurrentLogProvider(new QuartzLogProvider());
+            quartz.SchedulerId = "Scheduler-Core";
+
+            quartz.UseMicrosoftDependencyInjectionJobFactory();
+            quartz.UseSimpleTypeLoader();
+            quartz.UseInMemoryStore();
+            quartz.UseDefaultThreadPool(tp =>
+            {
+                tp.MaxConcurrency = 5;
+            });
+                
+            quartz.ScheduleJob<UserNotificationsJob>(trigger =>
+                {
+                    string cronExpression = configuration["BackgroundJobs:UserNotificationsCronExpression"];
+
+                    trigger.WithIdentity("UserNotifications")
+                           .StartNow()
+                           .WithCronSchedule(CronScheduleBuilder.CronSchedule(cronExpression));
+                }
+            );
+        });
+            
+        services.AddQuartzHostedService(options =>
+        {
+            options.WaitForJobsToComplete = true;
+        });
+
+        return services;
+    }
+    
     public static IServiceCollection AddApplicationOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddCustomSettings<AuthOptions>(configuration);

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.DataAccess.Repositories;
 
-public class BoardMembersRepository : RepositoryBase<BoardMember, Guid>, IBoardMembersRepository
+public class BoardMembersRepository : RelationalRepositoryBase<BoardMember, Guid>, IBoardMembersRepository
 {
     public BoardMembersRepository(PostgreSqlContext context) 
         : base(context)

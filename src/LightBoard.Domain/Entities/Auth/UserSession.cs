@@ -1,6 +1,8 @@
-﻿namespace LightBoard.Domain.Entities.Auth;
+﻿using LightBoard.Domain.Contracts;
 
-public class UserSession
+namespace LightBoard.Domain.Entities.Auth;
+
+public class UserSession : IHasUniqueKey<string>
 {
     public UserSession(User user, string key, DateTime createdAtUtc, DateTime expiresAtUtc)
     {
@@ -19,4 +21,6 @@ public class UserSession
     public DateTime CreatedAtUtc { get; init; }
     public DateTime ExpiresAtUtc { get; init; }
     public bool IsInvalidated { get; set; }
+
+    public string UniqueKey => Key;
 }

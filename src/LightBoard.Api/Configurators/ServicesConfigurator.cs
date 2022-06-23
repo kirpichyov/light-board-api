@@ -25,6 +25,7 @@ public static class ServicesConfigurator
                 .AddRedisContext(appConfiguration)
                 .AddApplicationServices(appConfiguration)
                 .AddApplicationOptions(appConfiguration)
+                .AddBackgroundJobs(appConfiguration)
                 .AddSessionKeyAuthorization();
 
         services.AddRouting(options => options.LowercaseUrls = true);

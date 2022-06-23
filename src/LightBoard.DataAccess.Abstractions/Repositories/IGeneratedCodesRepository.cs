@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface IGeneratedCodesRepository : IRepositoryBase<CodeBase, Guid>
+public interface IGeneratedCodesRepository : IRelationalRepositoryBase<CodeBase, Guid>
 {
     Task<TCodeBase?> GetLastByEmail<TCodeBase>(string email)
         where TCodeBase : CodeBase;

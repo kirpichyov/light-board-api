@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.DataAccess.Repositories;
 
-public class CardRepository : RepositoryBase<Card, Guid>, ICardsRepository
+public class CardRepository : RelationalRepositoryBase<Card, Guid>, ICardsRepository
 {
     public CardRepository(PostgreSqlContext context) 
         : base(context)

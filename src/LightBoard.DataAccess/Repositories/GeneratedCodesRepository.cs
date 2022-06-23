@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.DataAccess.Repositories;
 
-public class GeneratedCodesRepository : RepositoryBase<CodeBase, Guid>, IGeneratedCodesRepository
+public class GeneratedCodesRepository : RelationalRepositoryBase<CodeBase, Guid>, IGeneratedCodesRepository
 {
     public GeneratedCodesRepository(PostgreSqlContext context) : base(context)
     {

@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface IColumnsRepository : IRepositoryBase<Column, Guid>
+public interface IColumnsRepository : IRelationalRepositoryBase<Column, Guid>
 {
     Task<Column> GetForUser(Guid id, Guid userId);
 }

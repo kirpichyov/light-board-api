@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface IRepositoryBase<TEntity, TKey>
+public interface IRelationalRepositoryBase<TEntity, TKey>
     where TEntity : EntityBase<TKey>
     where TKey : struct
 {

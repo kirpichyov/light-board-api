@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
-public interface IBoardsRepository : IRepositoryBase<Board, Guid>
+public interface IBoardsRepository : IRelationalRepositoryBase<Board, Guid>
 {
     Task<Board> GetForUser(Guid boardId, Guid userId);
     Task<IReadOnlyCollection<Board>> GetAllByUserId(Guid userId);

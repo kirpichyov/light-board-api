@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.DataAccess.Repositories
 {
-    public class AttachmentRepository : RepositoryBase<CardAttachment, Guid>, IAttachmentRepository
+    public class AttachmentRepository : RelationalRepositoryBase<CardAttachment, Guid>, IAttachmentRepository
     {
         public AttachmentRepository(PostgreSqlContext context)
             : base(context)

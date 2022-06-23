@@ -2,7 +2,7 @@
 
 namespace LightBoard.DataAccess.Abstractions.Repositories
 {
-    public interface IAttachmentRepository : IRepositoryBase<CardAttachment, Guid>
+    public interface IAttachmentRepository : IRelationalRepositoryBase<CardAttachment, Guid>
     {
         Task<CardAttachment> GetForUser(Guid id, Guid userId);
     }
