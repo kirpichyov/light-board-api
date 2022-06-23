@@ -88,6 +88,7 @@ public class ApplicationMapper : IApplicationMapper
             Title = card.Title,
             Description = card.Description,
             Order = card.Order,
+            DeadlineAtUtc = (DateTime?)card.DeadlineAtUtc,
             Priority = ToPriorityModel(card.Priority),
             Assignees = MapCollectionOrEmpty(card.CardAssignees, ToAssigneeResponse),
             Attachments = MapCollectionOrEmpty(card.Attachments, ToCardAttachmentResponse),
