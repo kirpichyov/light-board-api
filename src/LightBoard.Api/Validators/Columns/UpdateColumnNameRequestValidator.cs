@@ -8,7 +8,7 @@ public class UpdateColumnNameRequestValidator  : AbstractValidator<UpdateColumnN
     public UpdateColumnNameRequestValidator()
     {
         RuleFor(model => model.Name)
-            .Empty()
+            .NotEmpty()
             .MaximumLength(32);
     }
 }

@@ -6,6 +6,7 @@ using LightBoard.Application.Models.CardComments;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Enums;
+using LightBoard.Application.Models.Records;
 using LightBoard.Application.Models.Users;
 using LightBoard.DataAccess.Abstractions.Arguments;
 using LightBoard.Domain.Entities.Attachments;
@@ -13,7 +14,9 @@ using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Domain.Entities.Columns;
+using LightBoard.Domain.Entities.Record;
 using LightBoard.Domain.Enums;
+using LightBoard.Shared.Contracts;
 
 namespace LightBoard.Application.Mapping;
 
@@ -97,6 +100,34 @@ public class ApplicationMapper : IApplicationMapper
         };
     }
 
+    public ActionHistoryRecord ToActionHistoryRecord<TItem>(HistoryRecordArgs<TItem> historyRecordArgs)
+        where TItem : IPureCloneable
+    {
+        return new ActionHistoryRecord(
+            historyRecordArgs.UserId,
+            historyRecordArgs.ResourceId,
+            historyRecordArgs.ResourceType,
+            historyRecordArgs.ActionType,
+            historyRecordArgs.CreatedTime,
+            historyRecordArgs.OldValue,
+            historyRecordArgs.NewValue
+            );
+    }
+
+    public HistoryRecordResponse ToHistoryRecordResponse(ActionHistoryRecord actionHistoryRecord)
+    {
+        return new HistoryRecordResponse
+        {
+            UserId = actionHistoryRecord.UserId,
+            ActionType = actionHistoryRecord.ActionType,
+            CreatedTime = actionHistoryRecord.CreatedTime,
+            ResourceId = actionHistoryRecord.ResourceId,
+            ResourceType = actionHistoryRecord.ResourceType,
+            NewValue = actionHistoryRecord.NewValue,
+            OldValue = actionHistoryRecord.OldValue
+        };
+    }
+
     public CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment)
     {
         return new CardAttachmentResponse()
@@ -122,7 +153,7 @@ public class ApplicationMapper : IApplicationMapper
         return sources?.Select(rule).ToArray();
     }
 
-    private IReadOnlyCollection<TDestination> MapCollectionOrEmpty<TSource, TDestination>(IEnumerable<TSource>? sources, Func<TSource, TDestination> rule)
+    public IReadOnlyCollection<TDestination> MapCollectionOrEmpty<TSource, TDestination>(IEnumerable<TSource>? sources, Func<TSource, TDestination> rule)
     {
         return MapCollection(sources, rule) ?? Array.Empty<TDestination>();
     }

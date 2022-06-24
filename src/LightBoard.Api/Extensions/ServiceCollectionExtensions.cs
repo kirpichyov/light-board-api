@@ -76,6 +76,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IHashingProvider, HashingProvider>();
         services.AddScoped<IKeysGenerator, KeysGenerator>();
+        services.AddScoped<IHistoryRecordService, HistoryRecordService>();
         services.AddScoped<IApplicationMapper, ApplicationMapper>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEmailService, EmailService>();

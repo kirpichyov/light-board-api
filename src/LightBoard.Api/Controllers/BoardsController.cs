@@ -3,6 +3,8 @@ using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
+using LightBoard.Application.Models.Paginations;
+using LightBoard.Application.Models.Records;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LightBoard.Api.Controllers;
@@ -10,10 +12,12 @@ namespace LightBoard.Api.Controllers;
 public class BoardsController : ApiControllerBase
 {
     private readonly IBoardsService _boardsService;
+    private readonly IHistoryRecordService _historyRecordService;
 
-    public BoardsController(IBoardsService boardsService)
+    public BoardsController(IBoardsService boardsService, IHistoryRecordService historyRecordService)
     {
         _boardsService = boardsService;
+        _historyRecordService = historyRecordService;
     }
     
     [HttpPost]
@@ -57,6 +61,16 @@ public class BoardsController : ApiControllerBase
         var boards = await _boardsService.GetAllBoards();
         
         return boards;
+    }
+    
+    [HttpGet("{boardId:guid}/history")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<HistoryRecordResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    public async Task<IReadOnlyCollection<HistoryRecordResponse>> GetBoardActionHistoryById(
+        [FromRoute] Guid boardId, 
+        [FromQuery] PaginationRequest paginationRequest)
+    {
+        return await _historyRecordService.GetAllHistoryRecord(boardId, paginationRequest);
     }
     
     [HttpGet("{boardId:guid}")]

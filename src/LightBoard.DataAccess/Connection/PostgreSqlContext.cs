@@ -4,6 +4,7 @@ using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Domain.Entities.Columns;
+using LightBoard.Domain.Entities.Record;
 using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.DataAccess.Connection;
@@ -16,6 +17,7 @@ public class PostgreSqlContext : DbContext
     public DbSet<BoardMember> BoardMembers { get; set; }
     public DbSet<Column> Columns { get; set; }
     public DbSet<Card> Cards { get; set; }
+    public DbSet<ActionHistoryRecord> ActionHistoryRecords { get; set; }
     public DbSet<CardAssignee> CardAssignees { get; set; }
     public DbSet<CardAttachment> CardAttachment { get; set; }
     public DbSet<CardComment> CardComments { get; set; }

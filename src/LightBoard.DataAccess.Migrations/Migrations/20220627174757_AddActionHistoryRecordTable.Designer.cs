@@ -3,6 +3,7 @@ using System;
 using LightBoard.DataAccess.Connection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightBoard.DataAccess.Migrations.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    partial class PostgreSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220627174757_AddActionHistoryRecordTable")]
+    partial class AddActionHistoryRecordTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,7 +41,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("name");
 
                     b.Property<DateTime>("UploadedAtUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("uploaded_at_utc");
 
                     b.Property<string>("Url")
@@ -74,7 +76,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("email");
 
                     b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("expiration_date");
 
                     b.Property<string>("ResetCode")
@@ -133,33 +135,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasName("pk_users");
 
                     b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("LightBoard.Domain.Entities.Auth.UserSession", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<DateTime>("ExpiresAtUtc")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("expires_at_utc");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_user_sessions");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_sessions_user_id");
-
-                    b.ToTable("user_sessions", (string)null);
                 });
 
             modelBuilder.Entity("LightBoard.Domain.Entities.Boards.Board", b =>
@@ -232,7 +207,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("column_id");
 
                     b.Property<DateTime?>("DeadlineAtUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("deadline_at_utc");
 
                     b.Property<string>("Description")
@@ -289,42 +264,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                     b.ToTable("card_assignees", (string)null);
                 });
 
-            modelBuilder.Entity("LightBoard.Domain.Entities.Cards.CardComment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CardId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("card_id");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("message");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_card_comments");
-
-                    b.HasIndex("CardId")
-                        .HasDatabaseName("ix_card_comments_card_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_card_comments_user_id");
-
-                    b.ToTable("card_comments", (string)null);
-                });
-
             modelBuilder.Entity("LightBoard.Domain.Entities.Columns.Column", b =>
                 {
                     b.Property<Guid>("Id")
@@ -366,7 +305,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("action_type");
 
                     b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_time");
 
                     b.Property<string>("NewValue")
@@ -419,16 +358,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasConstraintName("fk_card_attachment_cards_card_temp_id");
 
                     b.Navigation("Card");
-                });
-
-            modelBuilder.Entity("LightBoard.Domain.Entities.Auth.UserSession", b =>
-                {
-                    b.HasOne("LightBoard.Domain.Entities.Auth.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_sessions_users_user_id");
                 });
 
             modelBuilder.Entity("LightBoard.Domain.Entities.Boards.BoardMember", b =>
@@ -485,27 +414,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LightBoard.Domain.Entities.Cards.CardComment", b =>
-                {
-                    b.HasOne("LightBoard.Domain.Entities.Cards.Card", "Card")
-                        .WithMany("Comments")
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_card_comments_cards_card_temp_id2");
-
-                    b.HasOne("LightBoard.Domain.Entities.Auth.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_card_comments_users_user_temp_id");
-
-                    b.Navigation("Card");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LightBoard.Domain.Entities.Columns.Column", b =>
                 {
                     b.HasOne("LightBoard.Domain.Entities.Boards.Board", "Board")
@@ -530,8 +438,6 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                     b.Navigation("Attachments");
 
                     b.Navigation("CardAssignees");
-
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("LightBoard.Domain.Entities.Columns.Column", b =>
