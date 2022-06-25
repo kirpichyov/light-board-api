@@ -39,7 +39,7 @@ public class BoardsController : ApiControllerBase
     }
     
     [HttpDelete("{boardId:guid}")]
-    [ProducesResponseType(typeof(BoardResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteBoard([FromRoute] Guid boardId)
     {

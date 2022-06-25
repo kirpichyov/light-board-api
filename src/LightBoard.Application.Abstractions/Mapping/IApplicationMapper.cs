@@ -1,6 +1,7 @@
 ﻿using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.CardComments;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Enums;
@@ -27,5 +28,6 @@ public interface IApplicationMapper
     CardAssigneeResponse ToCardAssigneeResponse(CardAssignee cardAssignee);
     PriorityModel ToPriorityModel(Priority priority);
     Priority ToPriority(PriorityModel priorityModel);
+    CommentResponse ToCommentResponse(CardComment comment);
     IReadOnlyCollection<TDestination>? MapCollection<TSource, TDestination>(IEnumerable<TSource>? sources, Func<TSource, TDestination> rule);
 }

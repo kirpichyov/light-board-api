@@ -24,4 +24,9 @@ public class CardRepository : RelationalRepositoryBase<Card, Guid>, ICardsReposi
                                                  card.Column.Board.BoardMembers.Any(member =>member.UserId == userId))
                ?? throw new NotFoundException("Card not found");
     }
+
+    public async Task<bool> IsUserHasAccess(Guid id, Guid userId)
+    {
+        return await Context.Cards.AnyAsync(card => card.Id == id && card.Column.Board.BoardMembers.Any(member => member.UserId == userId));
+    }
 }
