@@ -2,6 +2,7 @@
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.CardComments;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Enums;
@@ -158,6 +159,18 @@ public class ApplicationMapper : IApplicationMapper
             PriorityModel.High => Priority.High,
             PriorityModel.Highest => Priority.Highest ,
             PriorityModel.Normal => Priority.Normal
+        };
+    }
+
+    public CommentResponse ToCommentResponse(CardComment comment)
+    {
+        return new CommentResponse()
+        {
+            Id = comment.Id,
+            CardId = comment.CardId,
+            UserId = comment.UserId,
+            Message = comment.Message,
+            CreatedAtUtc = comment.CreatedAtUtc
         };
     }
 }

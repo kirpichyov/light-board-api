@@ -27,7 +27,7 @@ public class ColumnsController : ApiControllerBase
     }
 
     [HttpDelete("{columnId:guid}")]
-    [ProducesResponseType(typeof(ColumnResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteColumn([FromRoute] Guid columnId)
     {

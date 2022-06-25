@@ -12,6 +12,7 @@ public interface IUnitOfWork
     ICardsRepository Cards { get; }
     ICardAssigneeRepository CardAssignees { get; }
     IAttachmentRepository Attachments { get; }
+    ICardCommentRepository CardComments { get; }
     IUserNotificationsRepository UserNotifications { get; }
     Task SaveChangesAsync();
 }

@@ -29,4 +29,5 @@ public class Card : EntityBase<Guid>
     public Priority Priority { get; set; }
     public ICollection<CardAssignee> CardAssignees { get; }
     public ICollection<CardAttachment> Attachments { get; set; }
+    public ICollection<CardComment> Comments { get; set; }
 }

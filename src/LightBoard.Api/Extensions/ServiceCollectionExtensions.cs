@@ -88,6 +88,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICardsService, CardsService>();
         services.AddScoped<ICardAttachmentService, CardAttachmentService>();
         services.AddScoped<IUserAvatarService, UserAvatarService>();
+        services.AddScoped<ICardCommentsService, CardCommentsService>();
         
         return services;
     }
