@@ -56,7 +56,16 @@ public static class ServiceCollectionExtensions
         string connectionString = configuration["ConnectionStrings:RedisConnection"];
 
         services.AddSingleton<IRedisContext, RedisContext>(_ => new RedisContext(connectionString));
-        services.AddScoped<IUserSessionsRepository, UserSessionsRepository>();
+
+        bool.TryParse(configuration["UseInMemoryInsteadRedis"], out var useInMemory);
+        if (useInMemory)
+        {
+            services.AddSingleton<IUserSessionsRepository, InMemoryUserSessionsRepository>();
+        }
+        else
+        {
+            services.AddScoped<IUserSessionsRepository, UserSessionsRepository>();
+        }
 
         return services;
     }
