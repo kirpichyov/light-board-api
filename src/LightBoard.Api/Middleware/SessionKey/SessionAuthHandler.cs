@@ -13,7 +13,7 @@ namespace LightBoard.Api.Middleware.SessionKey;
 
 public class SessionAuthHandler : AuthenticationHandler<SessionAuthSchemeOptions>
 {
-    private readonly IUserSessionsRepository _authSessions;
+    private readonly IUserSessionsCache _userSessions;
     private readonly AuthOptions _authOptions;
 
     public SessionAuthHandler(IOptionsMonitor<SessionAuthSchemeOptions> options,
@@ -21,10 +21,10 @@ public class SessionAuthHandler : AuthenticationHandler<SessionAuthSchemeOptions
         ILoggerFactory logger,
         UrlEncoder encoder,
         ISystemClock clock,
-        IUserSessionsRepository authSessions)
+        IUserSessionsCache userSessions)
         : base(options, logger, encoder, clock)
     {
-        _authSessions = authSessions;
+        _userSessions = userSessions;
         _authOptions = identityOptions.Value;
     }
 
@@ -48,15 +48,10 @@ public class SessionAuthHandler : AuthenticationHandler<SessionAuthSchemeOptions
             return AuthenticateResult.Fail("Session key is invalid.");
         }
 
-        UserSession? session = await _authSessions.GetAsync(sessionKey);
+        UserSession? session = await _userSessions.FetchAsync(sessionKey);
         if (session is null)
         {
-            return AuthenticateResult.Fail("Session key is invalid.");
-        }
-
-        if (session.IsInvalidated)
-        {
-            return AuthenticateResult.Fail("Session key is invalidated.");
+            return AuthenticateResult.Fail("Session key is invalid or revoked.");
         }
 
         if (session.ExpiresAtUtc <= DateTime.UtcNow)

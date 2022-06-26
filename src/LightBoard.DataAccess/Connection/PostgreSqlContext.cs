@@ -19,6 +19,7 @@ public class PostgreSqlContext : DbContext
     public DbSet<CardAssignee> CardAssignees { get; set; }
     public DbSet<CardAttachment> CardAttachment { get; set; }
     public DbSet<CardComment> CardComments { get; set; }
+    public DbSet<UserSession> UserSessions { get; set; }
 
     public PostgreSqlContext(DbContextOptions<PostgreSqlContext> options)
         : base(options)

@@ -27,23 +27,23 @@ public class AuthServiceTests
     private readonly UnitOfWorkFakeWrapper _unitOfWorkFakeWrapper;
     private readonly Fake<IHashingProvider> _hashingProviderFake;
     private readonly Fake<IKeysGenerator> _keysGeneratorFake;
-    private readonly Fake<IUserInfoService> _userInfoService;
     private readonly IOptions<AuthOptions> _authOptions;
     private readonly Fake<IHttpContextAccessor> _httpAccessorAccessorFake;
-    private readonly Fake<IUserSessionsRepository> _userSessionsRepositoryFake;
+    private readonly Fake<IUserSessionsCache> _userSessionsRepositoryFake;
     private readonly Fake<IUserAvatarService> _userAvatarServiceFake;
     private readonly Fake<ILogger<AuthService>> _loggerFake;
+    private readonly Fake<IUserSessionsService> _userSessionsServiceFake;
 
     public AuthServiceTests()
     {
-        _userInfoService = new Fake<IUserInfoService>();
         _hashingProviderFake = new Fake<IHashingProvider>();
         _keysGeneratorFake = new Fake<IKeysGenerator>();
         _httpAccessorAccessorFake = new Fake<IHttpContextAccessor>();
-        _userSessionsRepositoryFake = new Fake<IUserSessionsRepository>();
+        _userSessionsRepositoryFake = new Fake<IUserSessionsCache>();
         _unitOfWorkFakeWrapper = new UnitOfWorkFakeWrapper();
         _userAvatarServiceFake = new Fake<IUserAvatarService>();
         _loggerFake = new Fake<ILogger<AuthService>>();
+        _userSessionsServiceFake = new Fake<IUserSessionsService>();
         
         _authOptions = Options.Create(new AuthOptions()
         {
@@ -97,10 +97,10 @@ public class AuthServiceTests
 
             _unitOfWorkFakeWrapper.Fake
                 .CallsTo(unitOfWork => unitOfWork.SaveChangesAsync())
-                .MustHaveHappenedOnceExactly();
+                .MustHaveHappened(2, Times.Exactly);
 
             _userSessionsRepositoryFake
-                .CallsTo(repository => repository.AddAsync(A<UserSession>._))
+                .CallsTo(repository => repository.AddAsync(A<UserSession>._, A<TimeSpan?>._))
                 .MustHaveHappenedOnceExactly();
         }
     }
@@ -139,7 +139,7 @@ public class AuthServiceTests
                 .MustNotHaveHappened();
 
             _userSessionsRepositoryFake
-                .CallsTo(repository => repository.AddAsync(A<UserSession>._))
+                .CallsTo(repository => repository.AddAsync(A<UserSession>._, A<TimeSpan?>._))
                 .MustNotHaveHappened();
         }
     }
@@ -182,7 +182,7 @@ public class AuthServiceTests
             result.Should().Be(key);
             
             _userSessionsRepositoryFake
-                .CallsTo(repository => repository.AddAsync(A<UserSession>._))
+                .CallsTo(repository => repository.AddAsync(A<UserSession>._, A<TimeSpan?>._))
                 .MustHaveHappenedOnceExactly();
         }
     }
@@ -218,7 +218,7 @@ public class AuthServiceTests
             await func.Should().ThrowExactlyAsync<ValidationFailedException>();
 
             _userSessionsRepositoryFake
-                .CallsTo(repository => repository.AddAsync(A<UserSession>._))
+                .CallsTo(repository => repository.AddAsync(A<UserSession>._, A<TimeSpan?>._))
                 .MustNotHaveHappened();
         }
     }
@@ -251,7 +251,7 @@ public class AuthServiceTests
             await func.Should().ThrowExactlyAsync<ValidationFailedException>();
 
             _userSessionsRepositoryFake
-                .CallsTo(repository => repository.AddAsync(A<UserSession>._))
+                .CallsTo(repository => repository.AddAsync(A<UserSession>._, A<TimeSpan?>._))
                 .MustNotHaveHappened();
         }
     }
@@ -289,8 +289,8 @@ public class AuthServiceTests
                 .CallsTo(accessor => accessor.HttpContext)
                 .MustHaveHappenedOnceExactly();
 
-            _userSessionsRepositoryFake
-                .CallsTo(repository => repository.RemoveAsync(sessionKey))
+            _userSessionsServiceFake
+                .CallsTo(service => service.DeleteBySessionKey(sessionKey))
                 .MustHaveHappenedOnceExactly();
         }
     }
@@ -344,8 +344,8 @@ public class AuthServiceTests
         _authOptions,
         _httpAccessorAccessorFake.FakedObject,
         _userSessionsRepositoryFake.FakedObject,
-        _userInfoService.FakedObject,
         _userAvatarServiceFake.FakedObject,
-        _loggerFake.FakedObject
+        _loggerFake.FakedObject,
+        _userSessionsServiceFake.FakedObject
     );
 }

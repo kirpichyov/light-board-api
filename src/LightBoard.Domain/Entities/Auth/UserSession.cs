@@ -2,12 +2,12 @@
 
 namespace LightBoard.Domain.Entities.Auth;
 
-public class UserSession : IHasUniqueKey<string>
+public class UserSession : EntityBase<string>, IRedisKeyPart<string>
 {
     public UserSession(User user, string key, DateTime createdAtUtc, DateTime expiresAtUtc)
+        : base(key)
     {
         UserId = user.Id;
-        Key = key;
         CreatedAtUtc = createdAtUtc;
         ExpiresAtUtc = expiresAtUtc;
     }
@@ -17,10 +17,8 @@ public class UserSession : IHasUniqueKey<string>
     }
 
     public Guid UserId { get; init; }
-    public string Key { get; init; }
     public DateTime CreatedAtUtc { get; init; }
     public DateTime ExpiresAtUtc { get; init; }
-    public bool IsInvalidated { get; set; }
 
-    public string UniqueKey => Key;
+    public string RedisKeyPart => Id;
 }

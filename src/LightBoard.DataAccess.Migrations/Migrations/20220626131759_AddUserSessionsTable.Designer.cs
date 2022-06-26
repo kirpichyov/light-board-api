@@ -3,6 +3,7 @@ using System;
 using LightBoard.DataAccess.Connection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightBoard.DataAccess.Migrations.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    partial class PostgreSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220626131759_AddUserSessionsTable")]
+    partial class AddUserSessionsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,7 +41,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("name");
 
                     b.Property<DateTime>("UploadedAtUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("uploaded_at_utc");
 
                     b.Property<string>("Url")
@@ -74,7 +76,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("email");
 
                     b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("expiration_date");
 
                     b.Property<string>("ResetCode")
@@ -142,11 +144,11 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
                     b.Property<DateTime>("ExpiresAtUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("expires_at_utc");
 
                     b.Property<Guid>("UserId")
@@ -232,7 +234,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("column_id");
 
                     b.Property<DateTime?>("DeadlineAtUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("deadline_at_utc");
 
                     b.Property<string>("Description")
@@ -301,7 +303,7 @@ namespace LightBoard.DataAccess.Migrations.Migrations
                         .HasColumnName("card_id");
 
                     b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
 
                     b.Property<string>("Message")
