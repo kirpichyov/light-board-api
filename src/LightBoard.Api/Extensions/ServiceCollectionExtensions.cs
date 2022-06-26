@@ -35,6 +35,8 @@ public static class ServiceCollectionExtensions
                     })
                     .UseSnakeCaseNamingConvention();
 
+                AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                
                 if (environment.IsDevelopment())
                 {
                     options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
@@ -60,11 +62,11 @@ public static class ServiceCollectionExtensions
         bool.TryParse(configuration["UseInMemoryInsteadRedis"], out var useInMemory);
         if (useInMemory)
         {
-            services.AddSingleton<IUserSessionsRepository, InMemoryUserSessionsRepository>();
+            services.AddSingleton<IUserSessionsCache, InMemoryUserSessionsCache>();
         }
         else
         {
-            services.AddScoped<IUserSessionsRepository, UserSessionsRepository>();
+            services.AddScoped<IUserSessionsCache, UserSessionsRedisCache>();
         }
 
         return services;
@@ -89,6 +91,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICardAttachmentService, CardAttachmentService>();
         services.AddScoped<IUserAvatarService, UserAvatarService>();
         services.AddScoped<ICardCommentsService, CardCommentsService>();
+        services.AddScoped<IUserSessionsService, UserSessionsService>();
         
         return services;
     }

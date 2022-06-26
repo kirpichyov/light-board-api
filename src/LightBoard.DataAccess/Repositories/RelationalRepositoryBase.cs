@@ -7,7 +7,6 @@ namespace LightBoard.DataAccess.Repositories;
 
 public abstract class RelationalRepositoryBase<TEntity, TKey> : IRelationalRepositoryBase<TEntity, TKey>
     where TEntity : EntityBase<TKey>
-    where TKey : struct
 {
     protected PostgreSqlContext Context;
     private readonly DbSet<TEntity> _table;

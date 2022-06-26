@@ -6,19 +6,19 @@ using Newtonsoft.Json;
 
 namespace LightBoard.DataAccess.Repositories;
 
-public abstract class RedisRepositoryBase<TEntity, TKey> : IRedisRepositoryBase<TEntity, TKey>
-    where TEntity : class, IHasUniqueKey<TKey>
+public abstract class RedisRepositoryBase<TEntity, TKeyPart> : IRedisRepositoryBase<TEntity, TKeyPart>
+    where TEntity : class, IRedisKeyPart<TKeyPart>
 {
     private readonly IRedisContext _context;
-    private readonly ILogger<RedisRepositoryBase<TEntity, TKey>> _logger;
+    private readonly ILogger<RedisRepositoryBase<TEntity, TKeyPart>> _logger;
 
-    protected RedisRepositoryBase(IRedisContext context, ILogger<RedisRepositoryBase<TEntity, TKey>> logger)
+    protected RedisRepositoryBase(IRedisContext context, ILogger<RedisRepositoryBase<TEntity, TKeyPart>> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    public async Task<TEntity?> GetAsync(TKey key)
+    public async Task<TEntity?> GetAsync(TKeyPart key)
     {
         var redisValue = await _context.Database.StringGetAsync(GenerateRedisKey(key));
 
@@ -40,7 +40,7 @@ public abstract class RedisRepositoryBase<TEntity, TKey> : IRedisRepositoryBase<
         }
     }
 
-    public async Task AddAsync(TEntity entity)
+    public async Task<string> AddAsync(TEntity entity, TimeSpan? lifetime = null)
     {
         string? jsonValue = null;
         
@@ -53,13 +53,16 @@ public abstract class RedisRepositoryBase<TEntity, TKey> : IRedisRepositoryBase<
             _logger.LogError(exception, "Failed to serialize to json value. Value: '{jsonValue}'", jsonValue);
             throw;
         }
-        
-        await _context.Database.StringSetAsync(GenerateRedisKey(entity.UniqueKey), jsonValue);
+
+        var redisKey = GenerateRedisKey(entity.RedisKeyPart);
+        await _context.Database.StringSetAsync(redisKey, jsonValue, lifetime);
+
+        return redisKey;
     }
 
-    public async Task RemoveAsync(TKey key)
+    public async Task RemoveAsync(TKeyPart identifier)
     {
-        var redisKey = GenerateRedisKey(key);
+        var redisKey = GenerateRedisKey(identifier);
         var isDeleted = await _context.Database.KeyDeleteAsync(redisKey);
 
         if (!isDeleted)
@@ -68,5 +71,5 @@ public abstract class RedisRepositoryBase<TEntity, TKey> : IRedisRepositoryBase<
         }
     }
 
-    protected abstract string GenerateRedisKey(TKey key);
+    protected abstract string GenerateRedisKey(TKeyPart identifier);
 }

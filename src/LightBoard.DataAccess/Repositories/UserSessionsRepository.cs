@@ -1,16 +1,30 @@
-﻿using LightBoard.DataAccess.Abstractions.Connection;
-using LightBoard.DataAccess.Abstractions.Repositories;
+﻿using LightBoard.DataAccess.Abstractions.Repositories;
+using LightBoard.DataAccess.Connection;
 using LightBoard.Domain.Entities.Auth;
-using Microsoft.Extensions.Logging;
+using LightBoard.Shared.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.DataAccess.Repositories;
 
-public class UserSessionsRepository : RedisRepositoryBase<UserSession, string>, IUserSessionsRepository
+public class UserSessionsRepository : RelationalRepositoryBase<UserSession, string>, IUserSessionsRepository
 {
-    public UserSessionsRepository(IRedisContext context, ILogger<RedisRepositoryBase<UserSession, string>> logger)
-        : base(context, logger)
+    public UserSessionsRepository(PostgreSqlContext context)
+        : base(context)
     {
     }
 
-    protected override string GenerateRedisKey(string key) => "table.user_sessions:" + key;
+    public async Task<UserSession?> GetBySessionKey(string sessionKey)
+    {
+        return await Context.UserSessions
+            .AsNoTracking()
+            .SingleOrDefaultAsync(cacheRecord => cacheRecord.Id == sessionKey);
+    }
+
+    public async Task<IReadOnlyCollection<UserSession>> GetAllByUserId(Guid userId)
+    {
+        return await Context.UserSessions
+            .AsNoTracking()
+            .Where(cacheRecord => cacheRecord.UserId == userId)
+            .ToArrayAsync();
+    }
 }

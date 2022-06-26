@@ -3,9 +3,9 @@
 namespace LightBoard.DataAccess.Abstractions.Repositories;
 
 public interface IRedisRepositoryBase<TEntity, TKey> 
-    where TEntity : class, IHasUniqueKey<TKey>
+    where TEntity : class, IRedisKeyPart<TKey>
 {
     Task<TEntity?> GetAsync(TKey key);
-    Task AddAsync(TEntity entity);
-    Task RemoveAsync(TKey key);
+    Task<string> AddAsync(TEntity entity, TimeSpan? lifetime = null);
+    Task RemoveAsync(TKey identifier);
 }

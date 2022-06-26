@@ -1,7 +1,5 @@
-﻿using LightBoard.Application.Abstractions.Arguments;
-using LightBoard.Application.Abstractions.Mapping;
+﻿using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Options;
-using LightBoard.Application.Abstractions.Results;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Auth;
 using LightBoard.Application.Models.Users;
@@ -23,12 +21,12 @@ public class AuthService : IAuthService
     private readonly IApplicationMapper _mapper;
     private readonly IHashingProvider _hashingProvider;
     private readonly IKeysGenerator _keysGenerator;
-    private readonly IUserInfoService _userInfoService;
     private readonly AuthOptions _authOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IUserSessionsRepository _userSessionsRepository;
+    private readonly IUserSessionsCache _userSessionsCache;
     private readonly IUserAvatarService _userAvatarService;
     private readonly ILogger<AuthService> _logger;
+    private readonly IUserSessionsService _userSessionsService;
 
     public AuthService(
         IUnitOfWork unitOfWork,
@@ -37,21 +35,21 @@ public class AuthService : IAuthService
         IKeysGenerator keysGenerator,
         IOptions<AuthOptions> authOptions,
         IHttpContextAccessor httpContextAccessor,
-        IUserSessionsRepository userSessionsRepositoryRepository,
-        IUserInfoService userInfoService,
+        IUserSessionsCache userSessionsCacheCache,
         IUserAvatarService userAvatarService,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        IUserSessionsService userSessionsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _hashingProvider = hashingProvider;
         _keysGenerator = keysGenerator;
         _httpContextAccessor = httpContextAccessor;
-        _userSessionsRepository = userSessionsRepositoryRepository;
-        _userInfoService = userInfoService;
+        _userSessionsCache = userSessionsCacheCache;
         _authOptions = authOptions.Value;
         _userAvatarService = userAvatarService;
         _logger = logger;
+        _userSessionsService = userSessionsService;
     }
     public async Task<(UserInfoResponse CreatedUserInfo, string SessionKey)> CreateUser(RegisterRequest request)
     {
@@ -81,7 +79,7 @@ public class AuthService : IAuthService
         var session = await PersistSession(user);
         var createdUser = _mapper.ToUserInfoResponse(user);
 
-        return (createdUser, session.Key);
+        return (createdUser, session.Id);
     }
 
     public async Task<string> CreateUserSession(SignInRequest request)
@@ -94,7 +92,7 @@ public class AuthService : IAuthService
         }
 
         var session = await PersistSession(user);
-        return session.Key;
+        return session.Id;
     }
 
     public async Task DeleteSession()
@@ -106,7 +104,7 @@ public class AuthService : IAuthService
             throw new ValidationFailedException($"Session key in '{ApiHeaders.SessionKey}' header is required for logout operation");
         }
 
-        await _userSessionsRepository.RemoveAsync(headerValue);
+        await _userSessionsService.DeleteBySessionKey(headerValue);
     }
 
     private async Task<UserSession> PersistSession(User user)
@@ -115,7 +113,9 @@ public class AuthService : IAuthService
         var expiresAt = DateTime.UtcNow.AddDays(_authOptions.SessionDaysLifetime);
         var session = new UserSession(user, key, DateTime.UtcNow, expiresAt);
 
-        await _userSessionsRepository.AddAsync(session);
+        _unitOfWork.UserSessions.Add(session);
+        await _unitOfWork.SaveChangesAsync();
+        await _userSessionsCache.AddAsync(session, TimeSpan.FromDays(_authOptions.SessionDaysLifetime));
 
         return session;
     }

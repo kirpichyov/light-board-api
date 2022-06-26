@@ -6,4 +6,5 @@ public class ResetPasswordRequest : IContainsPassword
 {
     public string Password { get; set; }
     public string ResetCode { get; set; }
+    public bool StaySignedIn { get; set; }
 }

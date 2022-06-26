@@ -22,6 +22,7 @@ namespace LightBoard.Application.Services
         private readonly IMailingTemplateService _mailingTemplateService;
         private readonly IHashingProvider _hashingProvider;
         private readonly AuthOptions _authOptions;
+        private readonly IUserSessionsService _userSessionsService;
 
         public ProfileService(
             IUnitOfWork unitOfWork, 
@@ -32,7 +33,8 @@ namespace LightBoard.Application.Services
             ICodeService codeService, 
             IHashingProvider hashingProvider, 
             IEmailService emailService, 
-            IMailingTemplateService mailingTemplateService)
+            IMailingTemplateService mailingTemplateService,
+            IUserSessionsService userSessionsService)
         {
             _unitOfWork = unitOfWork;
             _mapper = applicationMapper;
@@ -43,6 +45,7 @@ namespace LightBoard.Application.Services
             _hashingProvider = hashingProvider;
             _emailService = emailService;
             _mailingTemplateService = mailingTemplateService;
+            _userSessionsService = userSessionsService;
         }
         
         public async Task RequestEmailConfirmation()
@@ -137,6 +140,11 @@ namespace LightBoard.Application.Services
             user.PasswordHash = _hashingProvider.GetHash(request.Password);
             
             await _unitOfWork.SaveChangesAsync();
+
+            if (!request.StaySignedIn)
+            {
+                await _userSessionsService.Invalidate(_userInfoService.UserId);
+            }
         }
         
         public async Task ResetPassword(ResetPasswordRequest request)
@@ -160,6 +168,11 @@ namespace LightBoard.Application.Services
             _unitOfWork.Users.Update(user);
             
             await _unitOfWork.SaveChangesAsync();
+
+            if (!request.StaySignedIn)
+            {
+                await _userSessionsService.Invalidate(user.Id);
+            }
         }
 
 

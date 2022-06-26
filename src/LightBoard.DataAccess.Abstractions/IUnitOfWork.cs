@@ -14,5 +14,6 @@ public interface IUnitOfWork
     IAttachmentRepository Attachments { get; }
     ICardCommentRepository CardComments { get; }
     IUserNotificationsRepository UserNotifications { get; }
+    IUserSessionsRepository UserSessions { get; }
     Task SaveChangesAsync();
 }
