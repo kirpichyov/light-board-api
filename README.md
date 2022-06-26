@@ -2,6 +2,11 @@
 LightBoard API is a backend for Trello analogue application developed with ASP.NET Core 6.
 [Project documentation.](https://github.com/kirpichyov/light-board-api/wiki)
 
+
+## Local environment without Docker
+- [Download PostgreSQL](https://www.postgresql.org/download/)
+- Set `UseInMemoryInsteadRedis: true` in the **appsettings.json** to use PC RAM instead of Redis.   
+
 ## Local environment with Docker
 
 ### Prerequisites
