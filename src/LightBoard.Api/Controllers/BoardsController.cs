@@ -1,6 +1,7 @@
 ﻿using LightBoard.Api.Swagger.Models;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using Microsoft.AspNetCore.Mvc;
 
@@ -120,5 +121,13 @@ public class BoardsController : ApiControllerBase
         var columns = await _boardsService.GetColumns(boardId);
 
         return columns;
+    }
+
+    [HttpGet("{boardId:guid}/cards/search")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<CardResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
+    public async Task<IReadOnlyCollection<CardResponse>> Search([FromRoute] Guid boardId, [FromQuery] CardsSearchRequest request)
+    {
+        return await _boardsService.Search(boardId, request);
     }
 }

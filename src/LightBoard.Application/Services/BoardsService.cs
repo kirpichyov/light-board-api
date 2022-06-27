@@ -1,14 +1,15 @@
 ﻿using LightBoard.Application.Abstractions.Arguments;
 using LightBoard.Application.Abstractions.Mapping;
-using LightBoard.Application.Abstractions.Results;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Columns;
 using LightBoard.Shared.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.Application.Services;
 
@@ -169,7 +170,7 @@ public class BoardsService : IBoardsService
             Purpose = BlobPurpose.Inline,
             FormFile = boardBackground
         };
-       
+
         if (board.BackgroundBlobName != null)
         {
             await _blobService.DeleteFile(BlobContainer.BoardBackgrounds, board.BackgroundBlobName);
@@ -178,5 +179,34 @@ public class BoardsService : IBoardsService
         board.BackgroundUrl = result.Uri;
         board.BackgroundBlobName = result.BlobName;
         return board;
+    }
+
+    public async Task<IReadOnlyCollection<CardResponse>> Search(Guid boardId, CardsSearchRequest request)
+    {
+        var board = await _unitOfWork.Boards.GetForUser(boardId, _userInfo.UserId);
+        var cards = board.Columns.SelectMany(column => column.Cards);
+
+        List<CardResponse> cardResponses = new List<CardResponse>();
+
+        if (request.SearchInTitle == true)
+        {
+            var filteredByTitle = cards.Where(card => EF.Functions.ILike(card.Title, $"%{request.Text}%")).ToList();
+
+            if (filteredByTitle != null)
+            {
+                cardResponses.AddRange(_mapper.MapCollection(filteredByTitle, _mapper.ToCardResponse));
+            }
+        }        
+        if (request.SearchInDescription == true)
+        {
+            var filteredByDescription = cards.Where(card => EF.Functions.ILike(card.Description, $"%{request.Text}%"));
+
+            if (filteredByDescription != null)
+            {
+                cardResponses.AddRange(_mapper.MapCollection(filteredByDescription, _mapper.ToCardResponse));
+            }
+        }
+    
+        return cardResponses;
     }
 }

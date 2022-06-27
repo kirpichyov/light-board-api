@@ -17,6 +17,7 @@ public class BoardsRepository : RelationalRepositoryBase<Board, Guid>, IBoardsRe
     {
         return await Context.Boards
                    .Include(board => board.Columns)
+                   .ThenInclude(columns => columns.Cards)
                    .Include(board => board.BoardMembers)
                    .ThenInclude(member => member.User)
                    .SingleOrDefaultAsync(board => board.Id == boardId && board.BoardMembers
