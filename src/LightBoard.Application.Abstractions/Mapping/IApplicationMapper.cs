@@ -6,6 +6,7 @@ using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Enums;
 using LightBoard.Application.Models.Users;
+using LightBoard.DataAccess.Abstractions.Arguments;
 using LightBoard.Domain.Entities.Attachments;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
@@ -26,6 +27,7 @@ public interface IApplicationMapper
     CardResponse ToCardResponse(Card card);
     CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment);
     CardAssigneeResponse ToCardAssigneeResponse(CardAssignee cardAssignee);
+    SearchCardsArgs MapToSearchArgs(SearchCardsRequest request);
     PriorityModel ToPriorityModel(Priority priority);
     Priority ToPriority(PriorityModel priorityModel);
     CommentResponse ToCommentResponse(CardComment comment);

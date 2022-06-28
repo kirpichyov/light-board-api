@@ -7,6 +7,7 @@ using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Enums;
 using LightBoard.Application.Models.Users;
+using LightBoard.DataAccess.Abstractions.Arguments;
 using LightBoard.Domain.Entities.Attachments;
 using LightBoard.Domain.Entities.Auth;
 using LightBoard.Domain.Entities.Boards;
@@ -171,6 +172,16 @@ public class ApplicationMapper : IApplicationMapper
             UserId = comment.UserId,
             Message = comment.Message,
             CreatedAtUtc = comment.CreatedAtUtc
+        };
+    }
+
+    public SearchCardsArgs MapToSearchArgs(SearchCardsRequest request)
+    {
+        return new SearchCardsArgs()
+        {
+            Text = request.Text,
+            SearchInDescription = request.SearchInDescription,
+            SearchInTitle = request.SearchInTitle
         };
     }
 }

@@ -1,8 +1,8 @@
 ﻿using LightBoard.Application.Abstractions.Arguments;
 using LightBoard.Application.Abstractions.Mapping;
-using LightBoard.Application.Abstractions.Results;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
+using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Boards;
@@ -169,7 +169,7 @@ public class BoardsService : IBoardsService
             Purpose = BlobPurpose.Inline,
             FormFile = boardBackground
         };
-       
+
         if (board.BackgroundBlobName != null)
         {
             await _blobService.DeleteFile(BlobContainer.BoardBackgrounds, board.BackgroundBlobName);
@@ -178,5 +178,20 @@ public class BoardsService : IBoardsService
         board.BackgroundUrl = result.Uri;
         board.BackgroundBlobName = result.BlobName;
         return board;
+    }
+
+    public async Task<IReadOnlyCollection<CardResponse>> SearchCards(Guid boardId, SearchCardsRequest request)
+    {
+        var isHasAccess = await _unitOfWork.Boards.HasAccessToBoard(boardId, _userInfo.UserId);
+
+        if (!isHasAccess)
+        {
+            throw new NotFoundException("Board is not found");
+        }
+
+        var searchArgs = _mapper.MapToSearchArgs(request);
+        var cards = await _unitOfWork.Boards.SearchForUser(boardId, searchArgs);
+
+        return _mapper.MapCollection(cards, _mapper.ToCardResponse);
     }
 }
