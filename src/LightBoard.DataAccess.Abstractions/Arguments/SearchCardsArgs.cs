@@ -1,6 +1,6 @@
-﻿namespace LightBoard.Application.Models.Cards
+﻿namespace LightBoard.DataAccess.Abstractions.Arguments
 {
-    public class SearchCardsRequest
+    public class SearchCardsArgs
     {
         public string Text { get; set; }
         public bool? SearchInTitle { get; set; }

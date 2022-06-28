@@ -181,32 +181,18 @@ public class BoardsService : IBoardsService
         return board;
     }
 
-    public async Task<IReadOnlyCollection<CardResponse>> Search(Guid boardId, CardsSearchRequest request)
+    public async Task<IReadOnlyCollection<CardResponse>> SearchCards(Guid boardId, SearchCardsRequest request)
     {
-        var board = await _unitOfWork.Boards.GetForUser(boardId, _userInfo.UserId);
-        var cards = board.Columns.SelectMany(column => column.Cards);
+        var isHasAccess = await _unitOfWork.Boards.HasAccessToBoard(boardId, _userInfo.UserId);
 
-        List<CardResponse> cardResponses = new List<CardResponse>();
-
-        if (request.SearchInTitle == true)
+        if (!isHasAccess)
         {
-            var filteredByTitle = cards.Where(card => EF.Functions.ILike(card.Title, $"%{request.Text}%")).ToList();
-
-            if (filteredByTitle != null)
-            {
-                cardResponses.AddRange(_mapper.MapCollection(filteredByTitle, _mapper.ToCardResponse));
-            }
-        }        
-        if (request.SearchInDescription == true)
-        {
-            var filteredByDescription = cards.Where(card => EF.Functions.ILike(card.Description, $"%{request.Text}%"));
-
-            if (filteredByDescription != null)
-            {
-                cardResponses.AddRange(_mapper.MapCollection(filteredByDescription, _mapper.ToCardResponse));
-            }
+            throw new NotFoundException("Board is not found");
         }
-    
-        return cardResponses;
+
+        var searchArgs = _mapper.MapToSearchArgs(request);
+        var cards = await _unitOfWork.Boards.SearchForUser(boardId, searchArgs);
+
+        return _mapper.MapCollection(cards, _mapper.ToCardResponse);
     }
 }

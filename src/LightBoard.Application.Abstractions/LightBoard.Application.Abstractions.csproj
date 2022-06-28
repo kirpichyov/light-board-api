@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\LightBoard.Application.Models\LightBoard.Application.Models.csproj" />
+      <ProjectReference Include="..\LightBoard.DataAccess.Abstractions\LightBoard.DataAccess.Abstractions.csproj" />
       <ProjectReference Include="..\LightBoard.Domain\LightBoard.Domain.csproj" />
     </ItemGroup>
 
