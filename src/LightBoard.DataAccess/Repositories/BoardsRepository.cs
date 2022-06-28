@@ -50,14 +50,8 @@ public class BoardsRepository : RelationalRepositoryBase<Board, Guid>, IBoardsRe
             .Include(card => card.Attachments)
             .Where(card => card.Column.BoardId == boardId);
 
-        if(searchCardsArgs.SearchInTitle == null)
-        {
-            searchCardsArgs.SearchInTitle = true;
-        }
-        if (searchCardsArgs.SearchInDescription == null)
-        {
-            searchCardsArgs.SearchInDescription = true;
-        }
+        searchCardsArgs.SearchInTitle ??= true;
+        searchCardsArgs.SearchInDescription ??= true;
 
         if (searchCardsArgs.SearchInTitle == true)
         {

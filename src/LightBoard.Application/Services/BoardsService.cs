@@ -9,7 +9,6 @@ using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Columns;
 using LightBoard.Shared.Exceptions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace LightBoard.Application.Services;
 
