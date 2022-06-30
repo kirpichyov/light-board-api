@@ -10,6 +10,7 @@ public interface IUnitOfWork
     IBoardMembersRepository BoardMembers { get; }
     IColumnsRepository Columns { get; }
     ICardsRepository Cards { get; }
+    IHistoryRecordRepository HistoryRecords { get; }
     ICardAssigneeRepository CardAssignees { get; }
     IAttachmentRepository Attachments { get; }
     ICardCommentRepository CardComments { get; }

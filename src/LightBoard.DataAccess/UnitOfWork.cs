@@ -11,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     private IGeneratedCodesRepository? _generatedCodes;
     private IUsersRepository? _users;
     private IBoardsRepository? _boards;
+    private IHistoryRecordRepository? _historyRecords;
     private IBoardMembersRepository? _boardMembers;
     private IColumnsRepository? _columns;
     private ICardsRepository? _cards;
@@ -31,6 +32,7 @@ public class UnitOfWork : IUnitOfWork
     public IBoardMembersRepository BoardMembers => _boardMembers ??= new BoardMembersRepository(_context);
     public IColumnsRepository Columns => _columns ??= new ColumnsRepository(_context);
     public ICardsRepository Cards => _cards ??= new CardRepository(_context);
+    public IHistoryRecordRepository HistoryRecords => _historyRecords ??= new HistoryRecordRepository(_context);
     public ICardAssigneeRepository CardAssignees => _cardAssignees ??= new CardAssigneeRepository(_context);
     public IAttachmentRepository Attachments => _attachments ??= new AttachmentRepository(_context);
     public ICardCommentRepository CardComments => _cardComments ??= new CardCommentRepository(_context);

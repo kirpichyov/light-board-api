@@ -4,11 +4,15 @@ using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
 using LightBoard.Application.Models.Columns;
+using LightBoard.Application.Models.Records;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Boards;
 using LightBoard.Domain.Entities.Columns;
+using LightBoard.Domain.Enums;
 using LightBoard.Shared.Exceptions;
+using LightBoard.Shared.Models.Enums;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace LightBoard.Application.Services;
 
@@ -18,16 +22,19 @@ public class BoardsService : IBoardsService
     private readonly IUserInfoService _userInfo;
     private readonly IApplicationMapper _mapper;
     private readonly IBlobService _blobService;
+    private readonly IHistoryRecordService _historyRecordService;
     public BoardsService(
         IUnitOfWork unitOfWork,
         IUserInfoService userInfo,
         IApplicationMapper mapper,
-        IBlobService blobService)
+        IBlobService blobService, 
+        IHistoryRecordService historyRecordService)
     {
         _unitOfWork = unitOfWork;
         _userInfo = userInfo;
         _mapper = mapper;
         _blobService = blobService;
+        _historyRecordService = historyRecordService;
     }
 
     public async Task<BoardResponse> CreateBoard(CreateBoardRequest request)
@@ -40,9 +47,22 @@ public class BoardsService : IBoardsService
         {
             await UploadBoardBackground(request.Background, board);
         }
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Board>
+        {
+            ActionType = ActionType.Create,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = board.Id,
+            ResourceType = ResourceType.Board,
+            UserId = _userInfo.UserId
+        };
+        
+        historyRecordsArgs.SetNewValue(board);
 
         _unitOfWork.Boards.Add(board);
         _unitOfWork.BoardMembers.Add(boardMember);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -52,6 +72,17 @@ public class BoardsService : IBoardsService
     public async Task<BoardResponse> UpdateBoard(Guid id, UpdateBoardRequest request)
     {
         Board board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Board>
+        {
+            ActionType = ActionType.Update,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = board.Id,
+            ResourceType = ResourceType.Board,
+            UserId = _userInfo.UserId,
+        };
+        
+        historyRecordsArgs.SetOldValue(board);
 
         board.Name = request.Name;
 
@@ -60,7 +91,11 @@ public class BoardsService : IBoardsService
             await UploadBoardBackground(request.Background, board);
         }
 
+        historyRecordsArgs.SetNewValue(board);
+
         _unitOfWork.Boards.Update(board);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -70,8 +105,21 @@ public class BoardsService : IBoardsService
     public async Task DeleteBoard(Guid id)
     {
         Board board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Board>
+        {
+            ActionType = ActionType.Delete,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = board.Id,
+            ResourceType = ResourceType.Board,
+            UserId = _userInfo.UserId,
+        };
+        
+        historyRecordsArgs.SetOldValue(board);
 
         _unitOfWork.Boards.Delete(board);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
 
         await _unitOfWork.SaveChangesAsync();
     }
@@ -146,8 +194,21 @@ public class BoardsService : IBoardsService
         var board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
 
         var column = new Column(request.Name, id, board.Columns.Count + 1);
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Column>
+        {
+            ActionType = ActionType.Create,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = column.Id,
+            ResourceType = ResourceType.Column,
+            UserId = _userInfo.UserId,
+        };
+        
+        historyRecordsArgs.SetNewValue(column);
 
         _unitOfWork.Columns.Add(column);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
 
         await _unitOfWork.SaveChangesAsync();
 

@@ -1,14 +1,26 @@
 ﻿using LightBoard.Domain.Entities.Columns;
+using LightBoard.Shared.Contracts;
 
 namespace LightBoard.Domain.Entities.Boards;
 
-public class Board : EntityBase<Guid>
+public class Board : EntityBase<Guid>, IPureCloneable
 {
     public Board(string name)
         : base(Guid.NewGuid())
     {
         Name = name;
         IsArchived = false;
+    }
+    
+    public object GetPureObject()
+    {
+        return new
+        {
+            Name = Name,
+            IsArchived = IsArchived,
+            BackgroundUrl = BackgroundUrl,
+            BackgroundBlobName = BackgroundBlobName
+        };
     }
 
     private Board()

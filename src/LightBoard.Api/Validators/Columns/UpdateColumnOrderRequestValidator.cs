@@ -8,7 +8,7 @@ public class UpdateColumnOrderRequestValidator : AbstractValidator<UpdateColumnO
     public UpdateColumnOrderRequestValidator()
     {
         RuleFor(model => model.Order)
-            .Empty()
+            .NotEmpty()
             .GreaterThanOrEqualTo(1);
     }
 }

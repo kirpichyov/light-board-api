@@ -2,10 +2,14 @@
 using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Cards;
+using LightBoard.Application.Models.Records;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Shared.Exceptions;
 using LightBoard.Domain.Entities.Attachments;
+using LightBoard.Domain.Enums;
+using LightBoard.Shared.Models.Enums;
+using Newtonsoft.Json;
 
 namespace LightBoard.Application.Services;
 
@@ -13,6 +17,7 @@ public class CardsService : ICardsService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserInfoService _userInfo;
+    private readonly IHistoryRecordService _historyRecordService;
     private readonly IApplicationMapper _mapper;
     private readonly IBlobService _blobService;
 
@@ -20,22 +25,39 @@ public class CardsService : ICardsService
         IUnitOfWork unitOfWork,
         IUserInfoService userInfo,
         IApplicationMapper mapper,
-        IBlobService blobService)
+        IBlobService blobService, 
+        IHistoryRecordService historyRecordService)
     {
         _unitOfWork = unitOfWork;
         _userInfo = userInfo;
         _mapper = mapper;
         _blobService = blobService;
+        _historyRecordService = historyRecordService;
     }
 
     public async Task<CardResponse> UpdateCard(Guid id, UpdateCardRequest request)
     {
         var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Card>
+        {
+            ActionType = ActionType.Update,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = card.Id,
+            ResourceType = ResourceType.Card,
+            UserId = _userInfo.UserId,
+        };
+        
+        historyRecordsArgs.SetOldValue(card);
 
         card.Title = request.Title;
         card.Description = request.Description;
         card.DeadlineAtUtc = request.DeadlineAtUtc;
         card.Priority = _mapper.ToPriority(request.Priority);
+
+        historyRecordsArgs.SetNewValue(card);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -45,8 +67,21 @@ public class CardsService : ICardsService
     public async Task DeleteCard(Guid id)
     {
         var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Card>
+        {
+            ActionType = ActionType.Delete,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = card.Id,
+            ResourceType = ResourceType.Card,
+            UserId = _userInfo.UserId,
+        };
+        
+        historyRecordsArgs.SetOldValue(card);
 
         _unitOfWork.Cards.Delete(card);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
 
         await _unitOfWork.SaveChangesAsync();
     }
@@ -61,6 +96,17 @@ public class CardsService : ICardsService
     public async Task<CardResponse> UpdateOrder(Guid id, UpdateCardOrderRequest request)
     {
         var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Card>
+        {
+            ActionType = ActionType.Update,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = card.Id,
+            ResourceType = ResourceType.Card,
+            UserId = _userInfo.UserId,
+        };
+        
+        historyRecordsArgs.SetOldValue(card);
 
         var cardToSwap = card.Column.Cards.SingleOrDefault(columnCard => columnCard.Order == request.Order);
 
@@ -82,6 +128,10 @@ public class CardsService : ICardsService
             cardToSwap.Order = tempOrder;
         }
 
+        historyRecordsArgs.SetNewValue(card);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
+        
         await _unitOfWork.SaveChangesAsync();
 
         return _mapper.ToCardResponse(card);
