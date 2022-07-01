@@ -31,7 +31,7 @@ namespace LightBoard.Api.Controllers
             return await _profileService.UpdateAvatar(request);
         }
 
-        [HttpGet("profile")]
+        [HttpGet]
         [ProducesResponseType(typeof(UserProfileResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
         public async Task<UserProfileResponse> GetProfile()
