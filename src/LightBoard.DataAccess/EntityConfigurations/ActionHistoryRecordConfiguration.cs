@@ -1,4 +1,5 @@
-﻿using LightBoard.Domain.Entities.Record;
+﻿using LightBoard.Domain.Entities.Boards;
+using LightBoard.Domain.Entities.Record;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LightBoard.DataAccess.EntityConfigurations;
@@ -16,5 +17,10 @@ public class ActionHistoryRecordConfiguration : EntityConfigurationBase<ActionHi
         builder.Property(actionHistoryRecord => actionHistoryRecord.OldValue);
         builder.Property(actionHistoryRecord => actionHistoryRecord.NewValue);
         builder.Property(actionHistoryRecord => actionHistoryRecord.UserId).IsRequired();
+
+        builder.HasOne<Board>()
+               .WithMany()
+               .HasForeignKey(actionHistoryRecord => actionHistoryRecord.BoardId)
+               .IsRequired();
     }
 }

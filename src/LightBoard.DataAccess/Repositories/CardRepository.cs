@@ -15,7 +15,8 @@ public class CardRepository : RelationalRepositoryBase<Card, Guid>, ICardsReposi
 
     public async Task<Card> GetForUser(Guid id, Guid userId)
     {
-        return await Context.Cards.Include(card => card.Attachments)
+        return await Context.Cards
+                   .Include(card => card.Attachments)
                    .Include(card => card.Column)
                    .ThenInclude(column => column.Cards)
                    .Include(card => card.CardAssignees)

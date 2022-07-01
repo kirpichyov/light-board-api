@@ -10,6 +10,6 @@ public class HistoryRecordResponse
     public ResourceType ResourceType { get; set; }
     public DateTime CreatedTime { get; set; }
     public ActionType ActionType { get; set; }
-    public string? OldValue { get; set; }
-    public string? NewValue { get; set; }
+    public object? OldValue { get; set; }
+    public object? NewValue { get; set; }
 }

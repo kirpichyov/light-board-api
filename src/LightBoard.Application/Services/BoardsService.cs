@@ -54,7 +54,8 @@ public class BoardsService : IBoardsService
             CreatedTime = DateTime.UtcNow,
             ResourceId = board.Id,
             ResourceType = ResourceType.Board,
-            UserId = _userInfo.UserId
+            UserId = _userInfo.UserId,
+            BoardId = board.Id
         };
         
         historyRecordsArgs.SetNewValue(board);
@@ -80,6 +81,7 @@ public class BoardsService : IBoardsService
             ResourceId = board.Id,
             ResourceType = ResourceType.Board,
             UserId = _userInfo.UserId,
+            BoardId = board.Id
         };
         
         historyRecordsArgs.SetOldValue(board);
@@ -106,21 +108,7 @@ public class BoardsService : IBoardsService
     {
         Board board = await _unitOfWork.Boards.GetForUser(id, _userInfo.UserId);
         
-        var historyRecordsArgs = new HistoryRecordArgs<Board>
-        {
-            ActionType = ActionType.Delete,
-            CreatedTime = DateTime.UtcNow,
-            ResourceId = board.Id,
-            ResourceType = ResourceType.Board,
-            UserId = _userInfo.UserId,
-        };
-        
-        historyRecordsArgs.SetOldValue(board);
-
         _unitOfWork.Boards.Delete(board);
-        
-        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
-
         await _unitOfWork.SaveChangesAsync();
     }
 
@@ -202,6 +190,7 @@ public class BoardsService : IBoardsService
             ResourceId = column.Id,
             ResourceType = ResourceType.Column,
             UserId = _userInfo.UserId,
+            BoardId = column.BoardId
         };
         
         historyRecordsArgs.SetNewValue(column);
