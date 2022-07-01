@@ -11,7 +11,8 @@ public class ActionHistoryRecord : EntityBase<Guid>
         ActionType actionType,
         DateTime createdTime,
         string? oldValue, 
-        string? newValue)
+        string? newValue,
+        Guid boardId)
     {
         UserId = userId;
         ResourceId = resourceId;
@@ -20,10 +21,10 @@ public class ActionHistoryRecord : EntityBase<Guid>
         ResourceType = resourceType;
         OldValue = oldValue;
         NewValue = newValue;
+        BoardId = boardId;
     }
     private ActionHistoryRecord()
     {
-        
     }
     
     public Guid UserId { get; }
@@ -33,4 +34,5 @@ public class ActionHistoryRecord : EntityBase<Guid>
     public ActionType ActionType { get; }
     public string? OldValue { get; }
     public string? NewValue { get; }
+    public Guid BoardId { get; }
 }

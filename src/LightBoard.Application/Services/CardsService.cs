@@ -46,6 +46,7 @@ public class CardsService : ICardsService
             ResourceId = card.Id,
             ResourceType = ResourceType.Card,
             UserId = _userInfo.UserId,
+            BoardId = card.Column.BoardId,
         };
         
         historyRecordsArgs.SetOldValue(card);
@@ -75,6 +76,7 @@ public class CardsService : ICardsService
             ResourceId = card.Id,
             ResourceType = ResourceType.Card,
             UserId = _userInfo.UserId,
+            BoardId = card.Column.BoardId,
         };
         
         historyRecordsArgs.SetOldValue(card);
@@ -104,6 +106,7 @@ public class CardsService : ICardsService
             ResourceId = card.Id,
             ResourceType = ResourceType.Card,
             UserId = _userInfo.UserId,
+            BoardId = card.Column.BoardId
         };
         
         historyRecordsArgs.SetOldValue(card);

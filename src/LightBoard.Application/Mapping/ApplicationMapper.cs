@@ -17,6 +17,7 @@ using LightBoard.Domain.Entities.Columns;
 using LightBoard.Domain.Entities.Record;
 using LightBoard.Domain.Enums;
 using LightBoard.Shared.Contracts;
+using Newtonsoft.Json;
 
 namespace LightBoard.Application.Mapping;
 
@@ -110,7 +111,8 @@ public class ApplicationMapper : IApplicationMapper
             historyRecordArgs.ActionType,
             historyRecordArgs.CreatedTime,
             historyRecordArgs.OldValue,
-            historyRecordArgs.NewValue
+            historyRecordArgs.NewValue,
+            historyRecordArgs.BoardId
             );
     }
 
@@ -123,8 +125,12 @@ public class ApplicationMapper : IApplicationMapper
             CreatedTime = actionHistoryRecord.CreatedTime,
             ResourceId = actionHistoryRecord.ResourceId,
             ResourceType = actionHistoryRecord.ResourceType,
-            NewValue = actionHistoryRecord.NewValue,
-            OldValue = actionHistoryRecord.OldValue
+            NewValue = actionHistoryRecord.NewValue is null
+                ? null
+                : JsonConvert.DeserializeObject(actionHistoryRecord.NewValue),
+            OldValue = actionHistoryRecord.OldValue is null
+                ? null
+                : JsonConvert.DeserializeObject(actionHistoryRecord.OldValue)
         };
     }
 

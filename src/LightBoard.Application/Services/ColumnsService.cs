@@ -42,6 +42,7 @@ public class ColumnsService : IColumnsService
             ResourceId = column.Id,
             ResourceType = ResourceType.Column,
             UserId = _userInfo.UserId,
+            BoardId = column.BoardId
         };
 
         historyRecordsArgs.SetOldValue(column);
@@ -69,7 +70,8 @@ public class ColumnsService : IColumnsService
             CreatedTime = DateTime.UtcNow,
             ResourceId = column.Id,
             ResourceType = ResourceType.Column,
-            UserId = _userInfo.UserId
+            UserId = _userInfo.UserId,
+            BoardId = column.BoardId
         };
         
         historyRecordsArgs.SetOldValue(column);
@@ -98,7 +100,8 @@ public class ColumnsService : IColumnsService
             CreatedTime = DateTime.UtcNow,
             ResourceId = column.Id,
             ResourceType = ResourceType.Column,
-            UserId = _userInfo.UserId
+            UserId = _userInfo.UserId,
+            BoardId = column.BoardId,
         };
         
         historyRecordsArgs.SetOldValue(column);
@@ -146,6 +149,7 @@ public class ColumnsService : IColumnsService
             ResourceId = card.Id,
             ResourceType = ResourceType.Card,
             UserId = _userInfo.UserId,
+            BoardId = column.BoardId
         };
         
         historyRecordsArgs.SetNewValue(card);
