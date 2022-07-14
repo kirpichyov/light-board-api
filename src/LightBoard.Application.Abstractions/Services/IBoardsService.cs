@@ -16,5 +16,5 @@ public interface IBoardsService
     Task<IReadOnlyCollection<BoardMemberResponse>> GetAllBoardMembers(Guid id);
     Task<ColumnResponse> CreateColumn(Guid id, CreateColumnRequest request);
     Task<IReadOnlyCollection<ColumnResponse>> GetColumns(Guid id);
-    Task<IReadOnlyCollection<CardResponse>> SearchCards(Guid boardId, SearchCardsRequest request);
+    Task<IReadOnlyCollection<CardResponse>> SearchCards(Guid boardId, CardsSearchRequest request);
 }

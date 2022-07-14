@@ -13,7 +13,7 @@ public class CardRepository : RelationalRepositoryBase<Card, Guid>, ICardsReposi
     {
     }
 
-    public async Task<Card> GetForUser(Guid id, Guid userId)
+    public async Task<Card> GetCardForUserById(Guid cardId, Guid userId)
     {
         return await Context.Cards
                    .Include(card => card.Attachments)
@@ -21,13 +21,13 @@ public class CardRepository : RelationalRepositoryBase<Card, Guid>, ICardsReposi
                    .ThenInclude(column => column.Cards)
                    .Include(card => card.CardAssignees)
                    .ThenInclude(cardAssignee => cardAssignee.User)
-                   .SingleOrDefaultAsync(card => card.Id == id && 
+                   .SingleOrDefaultAsync(card => card.Id == cardId && 
                                                  card.Column.Board.BoardMembers.Any(member =>member.UserId == userId))
                ?? throw new NotFoundException("Card not found");
     }
 
-    public async Task<bool> IsUserHasAccess(Guid id, Guid userId)
+    public async Task<bool> IsUserHasAccess(Guid cardId, Guid userId)
     {
-        return await Context.Cards.AnyAsync(card => card.Id == id && card.Column.Board.BoardMembers.Any(member => member.UserId == userId));
+        return await Context.Cards.AnyAsync(card => card.Id == cardId && card.Column.Board.BoardMembers.Any(member => member.UserId == userId));
     }
 }

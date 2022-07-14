@@ -38,7 +38,7 @@ public class Card : EntityBase<Guid>, IPureCloneable
     public string Description { get; set; }
     public int Order { get; set; }
     public DateTime? DeadlineAtUtc { get; set; }
-    public Guid ColumnId { get; private set; }
+    public Guid ColumnId { get; set; }
     public Column Column { get; private set; }
     public Priority Priority { get; set; }
     public ICollection<CardAssignee> CardAssignees { get; }

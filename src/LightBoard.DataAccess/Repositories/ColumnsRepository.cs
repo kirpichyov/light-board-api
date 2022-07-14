@@ -13,14 +13,15 @@ public class ColumnsRepository : RelationalRepositoryBase<Column, Guid>, IColumn
     {
     }
 
-    public async Task<Column> GetForUser(Guid id, Guid userId)
+    public async Task<Column> GetColumnForUserById(Guid columnId, Guid userId)
     {
-        return await Context.Columns.Include(column => column.Board)
+        return await Context.Columns
+                   .Include(column => column.Board)
                    .ThenInclude(board => board.Columns)
                    .Include(column => column.Cards)
                    .ThenInclude(card => card.Attachments)
-                   .SingleOrDefaultAsync(column => column.Id == id && column.Board.BoardMembers
-                   .Any((member => member.UserId == userId)))
+                   .SingleOrDefaultAsync(column => column.Id == columnId && column.Board.BoardMembers
+                   .Any(member => member.UserId == userId))
                ?? throw new NotFoundException("Column not found");
     }
 }

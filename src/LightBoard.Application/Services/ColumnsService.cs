@@ -7,6 +7,7 @@ using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Domain.Entities.Columns;
 using LightBoard.Domain.Enums;
+using LightBoard.Shared.Extensions;
 using LightBoard.Shared.Models.Enums;
 using Newtonsoft.Json;
 
@@ -33,7 +34,7 @@ public class ColumnsService : IColumnsService
     
     public async Task<ColumnResponse> UpdateColumn(Guid id, UpdateColumnNameRequest request)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Column>
         {
@@ -62,7 +63,7 @@ public class ColumnsService : IColumnsService
 
     public async Task DeleteColumn(Guid id)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Column>
         {
@@ -85,14 +86,14 @@ public class ColumnsService : IColumnsService
 
     public async Task<ColumnResponse> GetColumn(Guid id)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
 
         return _mapper.ToColumnResponse(column);
     }
 
     public async Task<ColumnResponse> UpdateOrder(Guid id, UpdateColumnOrderRequest request)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Column>
         {
@@ -105,25 +106,32 @@ public class ColumnsService : IColumnsService
         };
         
         historyRecordsArgs.SetOldValue(column);
+
+        var elementsCount = column.Board.Columns.MaxOrDefault(column => column.Order);
         
-        var columnToSwap = column.Board.Columns.SingleOrDefault(boardColumn => boardColumn.Order == request.Order);
-
-        if (columnToSwap is null)
+        column.Order = request.Order > elementsCount ? elementsCount : request.Order;
+        
+        if (request.Order > column.Order)
         {
-            column.Order = column.Board.Columns.Max(boardColumn => boardColumn.Order);
+            var collectionNewColumn = column.Board.Columns
+                .Where(columnCard => columnCard.Order <= column.Order && columnCard.Id != column.Id)
+                .ToArray();
 
-            foreach (var item in column.Board.Columns.Where(boardColumn => boardColumn.Id != column.Id))
+            foreach (var item in collectionNewColumn)
             {
                 item.Order--;
             }
         }
-        else
+        else if (request.Order < column.Order)
         {
-            var tempOrder = column.Order;
-        
-            column.Order = request.Order;
+            var collectionNewColumn = column.Board.Columns
+                .Where(columnCard => columnCard.Order >= column.Order && columnCard.Id != column.Id)
+                .ToArray();
 
-            columnToSwap.Order = tempOrder;
+            foreach (var item in collectionNewColumn)
+            {
+                item.Order++;
+            }
         }
         
         historyRecordsArgs.SetNewValue(column);
@@ -137,7 +145,7 @@ public class ColumnsService : IColumnsService
 
     public async Task<CardResponse> CreateCard(Guid id, CreateCardRequest request)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var card = new Card(column.Id, request.Title, request.Description, request.DeadlineAtUtc, column.Cards.Count + 1);
         card.Priority = _mapper.ToPriority(request.Priority);
@@ -165,7 +173,7 @@ public class ColumnsService : IColumnsService
 
     public async Task<IReadOnlyCollection<CardResponse>> GetColumnCards(Guid id)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
 
         return _mapper.MapCollection(column.Cards, _mapper.ToCardResponse);
     }
