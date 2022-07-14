@@ -2,6 +2,5 @@
 
 public class UpdateCardOrderRequest
 {
-    
     public int Order { get; set; }
 }

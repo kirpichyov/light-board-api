@@ -109,27 +109,32 @@ public class CardsService : ICardsService
         };
         
         historyRecordsArgs.SetOldValue(card);
+        
+        var elementsCount = card.Column.Cards.MaxOrDefault(column => column.Order);
 
-        var cardToSwap = card.Column.Cards.SingleOrDefault(columnCard => columnCard.Order == request.Order);
-
-        if (cardToSwap is null)
+        card.Order = request.Order > elementsCount ? elementsCount : request.Order;
+        
+        if (request.Order > card.Order)
         {
-            var collection = card.Column.Cards.Where(columnCard => columnCard.Order > card.Order).ToArray();
-            
-            card.Order = card.Column.Cards.Max(columnCard => columnCard.Order);
+            var collectionNewColumn = card.Column.Cards
+                .Where(columnCard => columnCard.Order <= card.Order && columnCard.Id != card.Id)
+                .ToArray();
 
-            foreach (var item in collection)
+            foreach (var item in collectionNewColumn)
             {
                 item.Order--;
             }
         }
-        else
+        else if (request.Order < card.Order)
         {
-            var tempOrder = card.Order;
+            var collectionNewColumn = card.Column.Cards
+                .Where(columnCard => columnCard.Order >= card.Order && columnCard.Id != card.Id)
+                .ToArray();
 
-            card.Order = request.Order;
-
-            cardToSwap.Order = tempOrder;
+            foreach (var item in collectionNewColumn)
+            {
+                item.Order++;
+            }
         }
 
         historyRecordsArgs.SetNewValue(card);

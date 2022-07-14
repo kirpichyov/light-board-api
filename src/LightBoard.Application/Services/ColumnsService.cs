@@ -7,6 +7,7 @@ using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Domain.Entities.Columns;
 using LightBoard.Domain.Enums;
+using LightBoard.Shared.Extensions;
 using LightBoard.Shared.Models.Enums;
 using Newtonsoft.Json;
 
@@ -105,27 +106,32 @@ public class ColumnsService : IColumnsService
         };
         
         historyRecordsArgs.SetOldValue(column);
+
+        var elementsCount = column.Board.Columns.MaxOrDefault(column => column.Order);
         
-        var columnToSwap = column.Board.Columns.SingleOrDefault(boardColumn => boardColumn.Order == request.Order);
-
-        if (columnToSwap is null)
+        column.Order = request.Order > elementsCount ? elementsCount : request.Order;
+        
+        if (request.Order > column.Order)
         {
-            var collection = column.Board.Columns.Where(boardColumn => boardColumn.Order > column.Order).ToArray();
-            
-            column.Order = column.Board.Columns.Max(boardColumn => boardColumn.Order);
+            var collectionNewColumn = column.Board.Columns
+                .Where(columnCard => columnCard.Order <= column.Order && columnCard.Id != column.Id)
+                .ToArray();
 
-            foreach (var item in collection)
+            foreach (var item in collectionNewColumn)
             {
                 item.Order--;
             }
         }
-        else
+        else if (request.Order < column.Order)
         {
-            var tempOrder = column.Order;
-        
-            column.Order = request.Order;
+            var collectionNewColumn = column.Board.Columns
+                .Where(columnCard => columnCard.Order >= column.Order && columnCard.Id != column.Id)
+                .ToArray();
 
-            columnToSwap.Order = tempOrder;
+            foreach (var item in collectionNewColumn)
+            {
+                item.Order++;
+            }
         }
         
         historyRecordsArgs.SetNewValue(column);
