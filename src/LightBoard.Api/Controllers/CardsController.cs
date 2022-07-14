@@ -2,6 +2,7 @@
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.CardComments;
 using LightBoard.Application.Models.Cards;
+using LightBoard.Domain.Entities.Cards;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LightBoard.Api.Controllers;
@@ -10,16 +11,13 @@ public class CardsController : ApiControllerBase
 {
     private readonly ICardsService _cardsService;
     private readonly ICardCommentsService _cardCommentsService;
-    private readonly IUserInfoService _userInfoService;
 
     public CardsController(
         ICardsService cardsService, 
-        ICardCommentsService cardCommentsService, 
-        IUserInfoService userInfoService)
+        ICardCommentsService cardCommentsService)
     {
         _cardsService = cardsService;
         _cardCommentsService = cardCommentsService;
-        _userInfoService = userInfoService;
     }
 
     [HttpPut("{cardId:guid}")]
@@ -102,7 +100,7 @@ public class CardsController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestModel), StatusCodes.Status400BadRequest)]
     public async Task<CommentResponse> CreateComment([FromRoute] Guid cardId, [FromBody] CreateCommentRequest request)
     {
-        return await _cardCommentsService.CreateComment(cardId, _userInfoService.UserId, request.Message);
+        return await _cardCommentsService.CreateComment(cardId, request.Message);
     }
 
     [HttpGet("{cardId:guid}/comments")]
@@ -111,5 +109,11 @@ public class CardsController : ApiControllerBase
     public async Task<IReadOnlyCollection<CommentResponse>> GetComments([FromRoute] Guid cardId)
     {
         return await _cardCommentsService.GetComments(cardId);
+    }
+    
+    [HttpPut("{cardId:guid}/column")]
+    public async Task<CardResponse> ChangeCardColumn([FromRoute] Guid cardId, [FromBody] ChangeCardColumnRequest request)
+    {
+        return await _cardsService.ChangeCardColumn(cardId, request);
     }
 }

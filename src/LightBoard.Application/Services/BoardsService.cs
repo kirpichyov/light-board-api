@@ -230,7 +230,7 @@ public class BoardsService : IBoardsService
         return board;
     }
 
-    public async Task<IReadOnlyCollection<CardResponse>> SearchCards(Guid boardId, SearchCardsRequest request)
+    public async Task<IReadOnlyCollection<CardResponse>> SearchCards(Guid boardId, CardsSearchRequest request)
     {
         var isHasAccess = await _unitOfWork.Boards.HasAccessToBoard(boardId, _userInfo.UserId);
 

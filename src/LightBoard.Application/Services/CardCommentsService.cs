@@ -28,14 +28,14 @@ namespace LightBoard.Application.Services
             _userInfoService = userInfoService;
         }
 
-        public async Task<CommentResponse> CreateComment(Guid cardId, Guid userId, string message)
+        public async Task<CommentResponse> CreateComment(Guid cardId, string message)
         {
-            if(!await _unitOfWork.Cards.IsUserHasAccess(cardId, userId))
+            if(!await _unitOfWork.Cards.IsUserHasAccess(cardId, _userInfoService.UserId))
             {
                 throw new AccessDeniedException("User have no access to this card");
             }
 
-            var comment = new CardComment(cardId, userId, message);
+            var comment = new CardComment(cardId, _userInfoService.UserId, message);
 
             _unitOfWork.CardComments.Add(comment);
             await _unitOfWork.SaveChangesAsync();

@@ -212,7 +212,7 @@ public class ApplicationMapper : IApplicationMapper
         };
     }
 
-    public SearchCardsArgs MapToSearchArgs(SearchCardsRequest request)
+    public SearchCardsArgs MapToSearchArgs(CardsSearchRequest request)
     {
         return new SearchCardsArgs()
         {

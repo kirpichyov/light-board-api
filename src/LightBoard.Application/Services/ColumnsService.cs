@@ -33,7 +33,7 @@ public class ColumnsService : IColumnsService
     
     public async Task<ColumnResponse> UpdateColumn(Guid id, UpdateColumnNameRequest request)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Column>
         {
@@ -62,7 +62,7 @@ public class ColumnsService : IColumnsService
 
     public async Task DeleteColumn(Guid id)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Column>
         {
@@ -85,14 +85,14 @@ public class ColumnsService : IColumnsService
 
     public async Task<ColumnResponse> GetColumn(Guid id)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
 
         return _mapper.ToColumnResponse(column);
     }
 
     public async Task<ColumnResponse> UpdateOrder(Guid id, UpdateColumnOrderRequest request)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Column>
         {
@@ -110,9 +110,11 @@ public class ColumnsService : IColumnsService
 
         if (columnToSwap is null)
         {
+            var collection = column.Board.Columns.Where(boardColumn => boardColumn.Order > column.Order).ToArray();
+            
             column.Order = column.Board.Columns.Max(boardColumn => boardColumn.Order);
 
-            foreach (var item in column.Board.Columns.Where(boardColumn => boardColumn.Id != column.Id))
+            foreach (var item in collection)
             {
                 item.Order--;
             }
@@ -137,7 +139,7 @@ public class ColumnsService : IColumnsService
 
     public async Task<CardResponse> CreateCard(Guid id, CreateCardRequest request)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
         
         var card = new Card(column.Id, request.Title, request.Description, request.DeadlineAtUtc, column.Cards.Count + 1);
         card.Priority = _mapper.ToPriority(request.Priority);
@@ -165,7 +167,7 @@ public class ColumnsService : IColumnsService
 
     public async Task<IReadOnlyCollection<CardResponse>> GetColumnCards(Guid id)
     {
-        var column = await _unitOfWork.Columns.GetForUser(id, _userInfo.UserId);
+        var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
 
         return _mapper.MapCollection(column.Cards, _mapper.ToCardResponse);
     }

@@ -7,9 +7,8 @@ using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Shared.Exceptions;
 using LightBoard.Domain.Entities.Attachments;
-using LightBoard.Domain.Enums;
+using LightBoard.Shared.Extensions;
 using LightBoard.Shared.Models.Enums;
-using Newtonsoft.Json;
 
 namespace LightBoard.Application.Services;
 
@@ -35,9 +34,9 @@ public class CardsService : ICardsService
         _historyRecordService = historyRecordService;
     }
 
-    public async Task<CardResponse> UpdateCard(Guid id, UpdateCardRequest request)
+    public async Task<CardResponse> UpdateCard(Guid cardId, UpdateCardRequest request)
     {
-        var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Card>
         {
@@ -65,9 +64,9 @@ public class CardsService : ICardsService
         return _mapper.ToCardResponse(card);
     }
 
-    public async Task DeleteCard(Guid id)
+    public async Task DeleteCard(Guid cardId)
     {
-        var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Card>
         {
@@ -88,16 +87,16 @@ public class CardsService : ICardsService
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<CardResponse> GetCard(Guid id)
+    public async Task<CardResponse> GetCard(Guid cardId)
     {
-        var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
 
         return _mapper.ToCardResponse(card);
     }
 
-    public async Task<CardResponse> UpdateOrder(Guid id, UpdateCardOrderRequest request)
+    public async Task<CardResponse> UpdateOrder(Guid cardId, UpdateCardOrderRequest request)
     {
-        var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
         
         var historyRecordsArgs = new HistoryRecordArgs<Card>
         {
@@ -115,9 +114,11 @@ public class CardsService : ICardsService
 
         if (cardToSwap is null)
         {
+            var collection = card.Column.Cards.Where(columnCard => columnCard.Order > card.Order).ToArray();
+            
             card.Order = card.Column.Cards.Max(columnCard => columnCard.Order);
 
-            foreach (var item in card.Column.Cards.Where(columnCard => columnCard.Id != card.Id))
+            foreach (var item in collection)
             {
                 item.Order--;
             }
@@ -142,7 +143,7 @@ public class CardsService : ICardsService
 
     public async Task<CardAttachmentResponse> AddAttachment(Guid cardId, AddCardAttachmentRequest request)
     {
-        var card = await _unitOfWork.Cards.GetForUser(cardId, _userInfo.UserId);
+        var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
 
         var args = new UploadFormFileArgs()
         {
@@ -167,9 +168,9 @@ public class CardsService : ICardsService
         return _mapper.ToCardAttachmentResponse(attachment);
     }
 
-    public async Task<CardAssigneeResponse> AddAssigneeToCard(Guid id, AddAssigneeToCardRequest request)
+    public async Task<CardAssigneeResponse> AddAssigneeToCard(Guid cardId, AddAssigneeToCardRequest request)
     {
-        var card = await _unitOfWork.Cards.GetForUser(id, _userInfo.UserId);
+        var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
 
         if (!await _unitOfWork.Boards.HasAccessToBoard(card.Column.BoardId, request.UserId))
         {
@@ -181,7 +182,7 @@ public class CardsService : ICardsService
             throw new ValidationFailedException("Card already has this assignee");
         }
 
-        var cardAssignee = new CardAssignee(request.UserId, id);
+        var cardAssignee = new CardAssignee(request.UserId, cardId);
         
         _unitOfWork.CardAssignees.Add(cardAssignee);
 
@@ -202,5 +203,84 @@ public class CardsService : ICardsService
         _unitOfWork.CardAssignees.Delete(cardAssignee);
         
         await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<CardResponse> ChangeCardColumn(Guid cardId, ChangeCardColumnRequest request)
+    {
+        var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
+        
+        var historyRecordsArgs = new HistoryRecordArgs<Card>
+        {
+            ActionType = ActionType.Update,
+            CreatedTime = DateTime.UtcNow,
+            ResourceId = card.Id,
+            ResourceType = ResourceType.Card,
+            UserId = _userInfo.UserId,
+            BoardId = card.Column.BoardId,
+        };
+        
+        historyRecordsArgs.SetOldValue(card);
+
+        var columnDestination = await _unitOfWork.Columns.GetColumnForUserById(request.ColumnId, _userInfo.UserId);
+
+        if (card.Column.BoardId != columnDestination.BoardId)
+        {
+            throw new NotFoundException($"Column with id: {columnDestination.Id} has not found in the same board with card.");
+        }
+
+        if (card.ColumnId == request.ColumnId)
+        {
+            throw new ValidationFailedException("Card is already in the requested column.");
+        }
+
+        var oldColumn = card.Column;
+        var newColumn = columnDestination;
+        
+        // Update column id
+        card.ColumnId = request.ColumnId;
+        
+        // Update orders in old column
+        var collectionOldColumn = oldColumn.Cards.Where(columnCard => columnCard.Order > card.Order).ToArray();
+
+        foreach (var item in collectionOldColumn)
+        {
+            item.Order--;
+        }
+        
+        // Determine card order in new column
+        card.Order = newColumn.Cards.MaxOrDefault(card => card.Order, 0) + 1;
+
+        var cardToSwap = newColumn.Cards.SingleOrDefault(columnCard => columnCard.Order == request.Order);
+            
+        if (cardToSwap is null)
+        {
+            var collectionNewColumn = newColumn.Cards.Where(columnCard => columnCard.Order > card.Order).ToArray();
+
+            foreach (var item in collectionNewColumn)
+            {
+                item.Order--;
+            }
+        }
+        else
+        {
+            card.Order = request.Order;
+            
+            var collectionNewColumn = newColumn.Cards.Where(columnCard => columnCard.Order >= card.Order).ToArray();
+
+            foreach (var item in collectionNewColumn)
+            {
+                item.Order++;
+            }
+        }
+
+        historyRecordsArgs.SetNewValue(card);
+        
+        _unitOfWork.Cards.Update(card);
+        
+        _historyRecordService.AddHistoryRecord(historyRecordsArgs);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return _mapper.ToCardResponse(card);
     }
 }

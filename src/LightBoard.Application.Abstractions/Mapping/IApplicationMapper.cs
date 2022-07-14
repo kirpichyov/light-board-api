@@ -33,7 +33,7 @@ public interface IApplicationMapper
     HistoryRecordResponse ToHistoryRecordResponse(ActionHistoryRecord actionHistoryRecord);
     CardAttachmentResponse ToCardAttachmentResponse(CardAttachment cardAttachment);
     CardAssigneeResponse ToCardAssigneeResponse(CardAssignee cardAssignee);
-    SearchCardsArgs MapToSearchArgs(SearchCardsRequest request);
+    SearchCardsArgs MapToSearchArgs(CardsSearchRequest request);
     PriorityModel ToPriorityModel(Priority priority);
     Priority ToPriority(PriorityModel priorityModel);
     CommentResponse ToCommentResponse(CardComment comment);

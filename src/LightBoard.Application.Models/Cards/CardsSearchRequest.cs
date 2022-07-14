@@ -1,6 +1,6 @@
 ﻿namespace LightBoard.Application.Models.Cards
 {
-    public class SearchCardsRequest
+    public class CardsSearchRequest
     {
         public string Text { get; set; }
         public bool? SearchInTitle { get; set; }

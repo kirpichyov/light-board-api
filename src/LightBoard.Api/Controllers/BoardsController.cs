@@ -140,7 +140,7 @@ public class BoardsController : ApiControllerBase
     [HttpGet("{boardId:guid}/cards/search")]
     [ProducesResponseType(typeof(IReadOnlyCollection<CardResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(EmptyModel), StatusCodes.Status404NotFound)]
-    public async Task<IReadOnlyCollection<CardResponse>> SearchCards([FromRoute] Guid boardId, [FromQuery] SearchCardsRequest request)
+    public async Task<IReadOnlyCollection<CardResponse>> SearchCards([FromRoute] Guid boardId, [FromQuery] CardsSearchRequest request)
     {
         return await _boardsService.SearchCards(boardId, request);
     }
