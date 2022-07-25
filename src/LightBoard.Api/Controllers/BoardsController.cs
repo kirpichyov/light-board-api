@@ -2,6 +2,7 @@
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
+using LightBoard.Application.Models.Cards.Filters;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Paginations;
 using LightBoard.Application.Models.Records;
@@ -143,5 +144,11 @@ public class BoardsController : ApiControllerBase
     public async Task<IReadOnlyCollection<CardResponse>> SearchCards([FromRoute] Guid boardId, [FromQuery] CardsSearchRequest request)
     {
         return await _boardsService.SearchCards(boardId, request);
+    }
+
+    [HttpGet("{boardId:guid}/cards")]
+    public async Task<IReadOnlyCollection<CardResponse>> GetCardsFilter([FromRoute] Guid boardId, [FromQuery] GetCardsFilterRequest getCardsFilterRequest)
+    {
+        return await _boardsService.GetFilteredCards(boardId, getCardsFilterRequest);
     }
 }

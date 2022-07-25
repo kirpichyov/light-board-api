@@ -3,6 +3,7 @@ using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
+using LightBoard.Application.Models.Cards.Filters;
 using LightBoard.Application.Models.Columns;
 using LightBoard.Application.Models.Records;
 using LightBoard.DataAccess.Abstractions;
@@ -242,6 +243,14 @@ public class BoardsService : IBoardsService
         var searchArgs = _mapper.MapToSearchArgs(request);
         var cards = await _unitOfWork.Boards.SearchForUser(boardId, searchArgs);
 
+        return _mapper.MapCollection(cards, _mapper.ToCardResponse);
+    }
+
+    public async Task<IReadOnlyCollection<CardResponse>> GetFilteredCards(Guid boardId, GetCardsFilterRequest getCardsFilterRequest)
+    {
+        var cards = await _unitOfWork.Cards.GetFilteredCards(_userInfo.UserId, boardId, getCardsFilterRequest.Assignees,
+            getCardsFilterRequest.Direction);
+        
         return _mapper.MapCollection(cards, _mapper.ToCardResponse);
     }
 }
