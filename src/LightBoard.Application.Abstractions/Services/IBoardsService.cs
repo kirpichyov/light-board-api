@@ -1,5 +1,6 @@
 ﻿using LightBoard.Application.Models.Boards;
 using LightBoard.Application.Models.Cards;
+using LightBoard.Application.Models.Cards.Filters;
 using LightBoard.Application.Models.Columns;
 
 namespace LightBoard.Application.Abstractions.Services;
@@ -17,4 +18,5 @@ public interface IBoardsService
     Task<ColumnResponse> CreateColumn(Guid id, CreateColumnRequest request);
     Task<IReadOnlyCollection<ColumnResponse>> GetColumns(Guid id);
     Task<IReadOnlyCollection<CardResponse>> SearchCards(Guid boardId, CardsSearchRequest request);
+    Task<IReadOnlyCollection<CardResponse>> GetFilteredCards(Guid boardId, GetCardsFilterRequest getCardsFilterRequest);
 }
