@@ -249,7 +249,7 @@ public class BoardsService : IBoardsService
     public async Task<IReadOnlyCollection<CardResponse>> GetFilteredCards(Guid boardId, GetCardsFilterRequest getCardsFilterRequest)
     {
         var cards = await _unitOfWork.Cards.GetFilteredCards(_userInfo.UserId, boardId, getCardsFilterRequest.Assignees,
-            getCardsFilterRequest.Direction);
+            getCardsFilterRequest.Direction, getCardsFilterRequest.SortBy);
         
         return _mapper.MapCollection(cards, _mapper.ToCardResponse);
     }

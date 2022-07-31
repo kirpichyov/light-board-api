@@ -2,6 +2,7 @@
 using LightBoard.DataAccess.Connection;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Shared.Exceptions;
+using LightBoard.Shared.Extensions;
 using LightBoard.Shared.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +29,7 @@ public class CardRepository : RelationalRepositoryBase<Card, Guid>, ICardsReposi
     }
 
     public async Task<IReadOnlyCollection<Card>> GetFilteredCards(Guid userId, Guid boardId, Guid[]? assignees, 
-        SortingDirection? direction)
+        SortingDirection? direction, CardsSortProperty? sortBy)
     {
         var query = Context.Cards
             .Include(card => card.Column)
@@ -43,12 +44,19 @@ public class CardRepository : RelationalRepositoryBase<Card, Guid>, ICardsReposi
             query = query.Where(card => card.CardAssignees.Any(cardAssignee => assignees.Contains(cardAssignee.Id)));
         }
 
-        query = direction switch
+        if (sortBy is not null)
         {
-            SortingDirection.Desc => query.OrderByDescending(card => card.Title),
-            SortingDirection.Asc => query.OrderBy(card => card.Title),
-            _ => query
-        };
+            query = sortBy switch
+            {
+                CardsSortProperty.Name => query.SortBy(cards => cards.Title, direction),
+                CardsSortProperty.Priority => query.SortBy(cards => cards.Priority, direction),
+                _ => query
+            };
+        }
+        else
+        {
+            query = query.SortBy(cards => cards.Title, direction ?? SortingDirection.Asc);
+        }
 
         return await query.ToArrayAsync();
     }
