@@ -6,4 +6,6 @@ public class GetCardsFilterRequest
 {
     public Guid[]? Assignees { get; set; }
     public SortingDirection? Direction { get; set; }
+    
+    public CardsSortProperty? SortBy { get; set; }
 }
