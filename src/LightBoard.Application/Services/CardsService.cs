@@ -1,4 +1,5 @@
-﻿using LightBoard.Application.Abstractions.Arguments;
+﻿using Ganss.XSS;
+using LightBoard.Application.Abstractions.Arguments;
 using LightBoard.Application.Abstractions.Mapping;
 using LightBoard.Application.Abstractions.Services;
 using LightBoard.Application.Models.Cards;
@@ -19,25 +20,28 @@ public class CardsService : ICardsService
     private readonly IHistoryRecordService _historyRecordService;
     private readonly IApplicationMapper _mapper;
     private readonly IBlobService _blobService;
+    private readonly IHtmlSanitizerService _htmlSanitizerService;
 
     public CardsService(
         IUnitOfWork unitOfWork,
         IUserInfoService userInfo,
         IApplicationMapper mapper,
         IBlobService blobService, 
-        IHistoryRecordService historyRecordService)
+        IHistoryRecordService historyRecordService, 
+        IHtmlSanitizerService htmlSanitizerService)
     {
         _unitOfWork = unitOfWork;
         _userInfo = userInfo;
         _mapper = mapper;
         _blobService = blobService;
         _historyRecordService = historyRecordService;
+        _htmlSanitizerService = htmlSanitizerService;
     }
 
     public async Task<CardResponse> UpdateCard(Guid cardId, UpdateCardRequest request)
     {
         var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
-        
+
         var historyRecordsArgs = new HistoryRecordArgs<Card>
         {
             ActionType = ActionType.Update,
@@ -51,7 +55,7 @@ public class CardsService : ICardsService
         historyRecordsArgs.SetOldValue(card);
 
         card.Title = request.Title;
-        card.Description = request.Description;
+        card.Description = _htmlSanitizerService.Sanitize(request.Description);
         card.DeadlineAtUtc = request.DeadlineAtUtc;
         card.Priority = _mapper.ToPriority(request.Priority);
 
@@ -97,7 +101,7 @@ public class CardsService : ICardsService
     public async Task<CardResponse> UpdateOrder(Guid cardId, UpdateCardOrderRequest request)
     {
         var card = await _unitOfWork.Cards.GetCardForUserById(cardId, _userInfo.UserId);
-        
+
         var historyRecordsArgs = new HistoryRecordArgs<Card>
         {
             ActionType = ActionType.Update,

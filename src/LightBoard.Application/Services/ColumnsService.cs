@@ -6,10 +6,8 @@ using LightBoard.Application.Models.Records;
 using LightBoard.DataAccess.Abstractions;
 using LightBoard.Domain.Entities.Cards;
 using LightBoard.Domain.Entities.Columns;
-using LightBoard.Domain.Enums;
 using LightBoard.Shared.Extensions;
 using LightBoard.Shared.Models.Enums;
-using Newtonsoft.Json;
 
 namespace LightBoard.Application.Services;
 
@@ -19,17 +17,20 @@ public class ColumnsService : IColumnsService
     private readonly IUserInfoService _userInfo;
     private readonly IApplicationMapper _mapper;
     private readonly IHistoryRecordService _historyRecordService;
+    private readonly IHtmlSanitizerService _htmlSanitizerService;
 
     public ColumnsService(
         IUnitOfWork unitOfWork, 
-        IUserInfoService userInfo, 
+        IUserInfoService userInfo,
         IApplicationMapper mapper, 
-        IHistoryRecordService historyRecordService)
+        IHistoryRecordService historyRecordService,
+        IHtmlSanitizerService htmlSanitizerService)
     {
         _unitOfWork = unitOfWork;
         _userInfo = userInfo;
         _mapper = mapper;
         _historyRecordService = historyRecordService;
+        _htmlSanitizerService = htmlSanitizerService;
     }
     
     public async Task<ColumnResponse> UpdateColumn(Guid id, UpdateColumnNameRequest request)
@@ -146,10 +147,13 @@ public class ColumnsService : IColumnsService
     public async Task<CardResponse> CreateCard(Guid id, CreateCardRequest request)
     {
         var column = await _unitOfWork.Columns.GetColumnForUserById(id, _userInfo.UserId);
-        
-        var card = new Card(column.Id, request.Title, request.Description, request.DeadlineAtUtc, column.Cards.Count + 1);
-        card.Priority = _mapper.ToPriority(request.Priority);
-        
+
+        var card = new Card(column.Id, request.Title, request.Description, request.DeadlineAtUtc, column.Cards.Count + 1)
+            {
+                Priority = _mapper.ToPriority(request.Priority),
+                Description = _htmlSanitizerService.Sanitize(request.Description)
+            };
+
         var historyRecordsArgs = new HistoryRecordArgs<Card>
         {
             ActionType = ActionType.Create,
